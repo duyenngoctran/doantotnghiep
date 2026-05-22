@@ -157,6 +157,12 @@ erDiagram
 
 Hoặc xem file sơ đồ tại `diagrams/erd.mmd`.
 
+### Thêm: các đối tượng DB và ràng buộc đặc biệt
+- `negative_support_feedback_vectors` (Postgres + pgvector): bảng bổ sung được tạo khi dùng vector RAG. Chứa `feedback_id` (PK, FK → `feedbacks.id`), `user_id`, `subject_id`, `feedback_text`, `embedding` (vector) và `created_at`.
+- `news_likes` có ràng buộc duy nhất `(post_id, anonymous_id)` để tránh like trùng lặp từ cùng anonymous id.
+- `survey_responses` và `survey_text_responses` có `UNIQUE(survey_id, user_id)` để một user chỉ vote/submit 1 lần cho khảo sát.
+- Một số index được thêm cho performance (ví dụ index theo `(conversation_id, created_at)` trên `chat_messages`, index cho `alerts.user_id`, và index/vindex cho `negative_support_feedback_vectors.embedding`).
+
 ## Cách chạy (local)
 1. Tạo virtualenv và cài dependencies:
 ```powershell
