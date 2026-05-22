@@ -19,6 +19,7 @@ phobert_student_feedback_sentiment/model.safetensors
 
 # User uploads should not be committed
 uploads/*
+!uploads/news/
 !uploads/.gitkeep
 uploads/news/*
 !uploads/news/.gitkeep
