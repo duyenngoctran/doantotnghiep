@@ -1,22 +1,18 @@
 
 # XÂY DỰNG HỆ THỐNG PHÂN TÍCH CẢM XÚC TRONG PHẢN HỒI SINH VIÊN ĐỂ NÂNG CAO CHẤT LƯỢNG ĐÀO TẠO
 
-## 1. Tổng quan
+## Tổng quan
 Hệ thống này là một mạng xã hội nội bộ dành cho sinh viên, được thiết kế để vừa phục vụ giao tiếp (bài viết, bình luận, khảo sát), vừa phát hiện sớm các trạng thái cảm xúc tiêu cực và nội dung có nguy cơ. Các chức năng chính:
 
 - Đăng ký / Đăng nhập: xác thực người dùng, phân quyền `student`/`admin`.
-- Đăng bài, like, comment, báo cáo: hỗ trợ nội dung text (và file media), cho phép báo cáo bài không phù hợp.
+- Đăng bài, like, comment, báo cáo: hỗ trợ nội dung text (và file media).
 - Quản lý người dùng & Admin Dashboard: admin có thể quản lý users, lớp/môn, tin tức, khảo sát, và xem dashboard phân tích.
-- Phân tích cảm xúc & cảnh báo: mọi feedback/post được gửi sẽ được phân tích sentiment (model local); nếu phát hiện tiêu cực/đáng lo ngại, hệ thống tạo alert và kích hoạt luồng hỗ trợ.
+- Phân tích cảm xúc & cảnh báo: mọi feedback/post được gửi sẽ được phân tích sentiment (model local); nếu phát hiện tiêu cực/đáng lo ngại, hệ thống sẽ gửi phản ảnh tiêu cực cho giảng viên chủ nhiệm
 - Thông báo realtime: push notification qua WebSocket tới người dùng và admin.
 - Chat AI tiếng Việt & RAG hỗ trợ: chatbot nội bộ dùng model local hoặc RAG (retrieval + LLM) để trả lời/suggest hướng hỗ trợ; có thể kết hợp retriever từ vectorstore.
 - Admin review & phân tích nâng cao: giao diện admin cho phép duyệt các alert, xem phân tích toxic/vision/RAG, và đưa ra quyết định can thiệp.
 
-
 # Student Feedback System — README
-
-Tài liệu ngắn gọn, chính xác theo mã nguồn hiện có trong workspace `student_feedback_system`.
-
 ## 1. Mục tiêu
 
 Hệ thống cho phép sinh viên nộp phản hồi (feedback) về môn học/giảng viên, lưu trữ và phân tích cảm xúc; cung cấp cơ chế cảnh báo và hỗ trợ thông qua chatbot/RAG khi phát hiện nội dung tiêu cực.
@@ -282,10 +278,6 @@ uvicorn app.main:app --reload
 		- `CREATE EXTENSION IF NOT EXISTS vector;`
 	- Cập nhật `.env`: `DB_URL=postgresql+psycopg2://user:pass@host:5432/dbname`
 	- Khởi động lại dịch vụ, kiểm tra `app/negative_support_vector_rag_chatbot.py` để đảm bảo kết nối vectorstore.
-
-## Chú ý khi đẩy lên GitHub
-- Không commit file `.env` hay tệp chứa thông tin nhạy cảm.
-- `phobert_student_feedback_sentiment/model.safetensors` rất lớn — nên bỏ qua trong `.gitignore` hoặc dùng Git LFS.
 
 ## Các endpoint quan trọng (tóm lược)
 - `POST /feedback` — nộp phản hồi, trả về phân tích sentiment
