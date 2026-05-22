@@ -196,4 +196,33 @@ uvicorn app.main:app --reload
 - ERD: `diagrams/erd.mmd`
 - Xem mã nguồn: `app/main.py`, `app/crud.py`, `app/models.py`, `app/sentiment_model.py`, `app/negative_support_vector_rag_chatbot.py`.
 
+## Luồng hoạt động (Flow)
+
+Sơ đồ luồng hoạt động đơn giản dưới đây mô tả dòng chính: nộp phản hồi → phân tích sentiment → xử lý RAG cho phản hồi tiêu cực → cảnh báo cho admin.
+
+```mermaid
+%% See diagrams/system_flow.mmd for source
+flowchart TD
+	S[Student] -->|submit feedback| F[POST /feedback]
+	F --> M[Sentiment model (PhoBERT)]
+	M -->|POS| Store[Store feedback]
+	Store --> Ack[Send acknowledgement]
+	M -->|NEG| StoreNeg[Store feedback]
+	StoreNeg --> BG[Background task]
+	BG --> Emb[Generate embedding\n(sentence-transformers)]
+	Emb --> Upsert[Upsert embedding to vector store\n(Postgres + pgvector)]
+	Upsert --> RAG[Negative-support RAG\n(retrieval + Groq)]
+	RAG --> Reply[Reply to student (support message)]
+	RAG -->|escalated| Alert[Create Alert]
+	Alert --> Admin[Admin dashboard / Email alert]
+
+	Chat[Student chat] --> ChatAPI[POST /api/chat]
+	ChatAPI --> ChatModel[Sentiment check & save]
+	ChatModel -->|risk| Alert
+
+	Admin --> Manage[Manage users / surveys / news]
+```
+
+Hoặc xem file sơ đồ luồng tại `diagrams/system_flow.mmd`.
+
 
