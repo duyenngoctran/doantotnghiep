@@ -82,3 +82,110 @@ uvicorn app.main:app --reload
 ---
 Nếu bạn muốn, mình sẽ: (1) xuất ERD sang PNG (cần `mmdc`/Docker ở máy bạn), (2) tạo GitHub Actions mẫu để triển khai, hoặc (3) chuyển cấu hình sang PostgreSQL. Chọn một việc để mình làm tiếp.
 
+erDiagram
+    USERS {
+        INTEGER id PK
+        STRING username
+        STRING fullname
+        STRING role
+        INTEGER class_id FK
+    }
+
+    CLASSES {
+        INTEGER id PK
+        STRING name
+    }
+
+    SUBJECTS {
+        INTEGER id PK
+        STRING name
+        INTEGER semester_id FK
+    }
+
+    TEACHERS {
+        INTEGER id PK
+        STRING teacher_code
+        STRING full_name
+    }
+
+    SEMESTERS {
+        INTEGER id PK
+        STRING name
+    }
+
+    FEEDBACKS {
+        INTEGER id PK
+        INTEGER user_id FK
+        INTEGER subject_id FK
+        STRING text
+        STRING label
+        FLOAT prob_neg
+        FLOAT prob_pos
+        DATETIME created_at
+    }
+
+    CHAT_MESSAGES {
+        INTEGER id PK
+        INTEGER user_id FK
+        STRING conversation_id
+        STRING message_role
+        TEXT message_text
+        STRING sentiment
+        BOOLEAN escalated
+        DATETIME created_at
+    }
+
+    ALERTS {
+        INTEGER id PK
+        INTEGER user_id FK
+        STRING trigger_text
+        STRING risk_level
+        DATETIME created_at
+    }
+
+    NEWS_POSTS {
+        INTEGER id PK
+        STRING title
+        TEXT content
+        DATETIME created_at
+    }
+
+    NEWS_COMMENTS {
+        INTEGER id PK
+        INTEGER post_id FK
+        STRING anonymous_id
+        TEXT content
+        STRING sentiment_label
+    }
+
+    SURVEYS {
+        INTEGER id PK
+        STRING title
+        INTEGER class_id FK
+    }
+
+    SURVEY_OPTIONS {
+        INTEGER id PK
+        INTEGER survey_id FK
+        STRING option_text
+    }
+
+    SURVEY_RESPONSES {
+        INTEGER id PK
+        INTEGER survey_id FK
+        INTEGER option_id FK
+        INTEGER user_id FK
+    }
+
+    -- Relationships
+    USERS }|..|| CLASSES : "belongs_to"
+    SUBJECTS }|..|| SEMESTERS : "in"
+    FEEDBACKS }|..|| USERS : "author"
+    FEEDBACKS }|..|| SUBJECTS : "on"
+    CHAT_MESSAGES }|..|| USERS : "from"
+    ALERTS }|..|| USERS : "for"
+    NEWS_COMMENTS }|..|| NEWS_POSTS : "on"
+    SURVEYS }|..|| CLASSES : "for"
+    SURVEY_OPTIONS }|..|| SURVEYS : "option_of"
+    SURVEY_RESPONSES }|..|| SURVEYS : "response_to"
+    SURVEY_RESPONSES }|..|| SURVEY_OPTIONS : "chooses"
