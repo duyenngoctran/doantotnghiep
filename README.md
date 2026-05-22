@@ -1,10 +1,122 @@
+
+# XÂY DỰNG HỆ THỐNG PHÂN TÍCH CẢM XÚC TRONG PHẢN HỒI SINH VIÊN ĐỂ NÂNG CAO CHẤT LƯỢNG ĐÀO TẠO
+
+## 1. Tổng quan
+Hệ thống này là một mạng xã hội nội bộ dành cho sinh viên, được thiết kế để vừa phục vụ giao tiếp (bài viết, bình luận, khảo sát), vừa phát hiện sớm các trạng thái cảm xúc tiêu cực và nội dung có nguy cơ. Các chức năng chính:
+
+- Đăng ký / Đăng nhập: xác thực người dùng, phân quyền `student`/`admin`.
+- Đăng bài, like, comment, báo cáo: hỗ trợ nội dung text (và file media), cho phép báo cáo bài không phù hợp.
+- Quản lý người dùng & Admin Dashboard: admin có thể quản lý users, lớp/môn, tin tức, khảo sát, và xem dashboard phân tích.
+- Phân tích cảm xúc & cảnh báo: mọi feedback/post được gửi sẽ được phân tích sentiment (model local); nếu phát hiện tiêu cực/đáng lo ngại, hệ thống tạo alert và kích hoạt luồng hỗ trợ.
+- Thông báo realtime: push notification qua WebSocket tới người dùng và admin.
+- Chat AI tiếng Việt & RAG hỗ trợ: chatbot nội bộ dùng model local hoặc RAG (retrieval + LLM) để trả lời/suggest hướng hỗ trợ; có thể kết hợp retriever từ vectorstore.
+- Admin review & phân tích nâng cao: giao diện admin cho phép duyệt các alert, xem phân tích toxic/vision/RAG, và đưa ra quyết định can thiệp.
+
+
 # Student Feedback System — README
 
-Tài liệu này mô tả ngắn gọn công nghệ, luồng hoạt động và các bước chạy hệ thống `student_feedback_system`.
+Tài liệu ngắn gọn, chính xác theo mã nguồn hiện có trong workspace `student_feedback_system`.
 
-**Tóm tắt:** Hệ thống cho phép sinh viên gửi phản hồi về môn học/giảng viên, phân tích sentiment bằng mô hình PhoBERT, lưu trữ và cung cấp trợ giúp/gợi ý tự động (RAG) khi cần. Backend viết bằng `FastAPI`; ORM dùng `SQLAlchemy`. Mặc định sử dụng SQLite cho phát triển; khuyến nghị PostgreSQL + `pgvector` cho môi trường production khi cần lưu vector embeddings.
+## 1. Mục tiêu
 
-**Thư mục chính:**
+Hệ thống cho phép sinh viên nộp phản hồi (feedback) về môn học/giảng viên, lưu trữ và phân tích cảm xúc; cung cấp cơ chế cảnh báo và hỗ trợ thông qua chatbot/RAG khi phát hiện nội dung tiêu cực.
+
+## 2. Thư mục & file chính
+
+- `app/`:
+	- `main.py` — entrypoint FastAPI, khai báo các route và background tasks
+	- `models.py` — định nghĩa SQLAlchemy models
+	- `database.py` — tạo engine, `SessionLocal`, đọc `DB_URL` từ env
+	- `crud.py` — hàm CRUD dùng bởi route
+	- `sentiment_model.py` — tải model local và hàm phân tích sentiment
+	- `negative_support_rag_chatbot.py` — RAG chatbot cho hỗ trợ khi phát hiện tiêu cực
+	- `negative_support_vector_rag_chatbot.py` — xử lý vectorstore, upsert/retrieve embeddings
+	- `admin_rag_chatbot.py` — các helper admin cho RAG
+
+- `frontend/`:
+	- `login.html`, `student_feedback.html`, `admin_dashboard.html` — trang tĩnh giao diện
+
+- `phobert_student_feedback_sentiment/` — tokenizer và model files dùng cho phân tích sentiment (`vocab.txt`, `model.safetensors`, ...)
+- `inspect_models.py` — script tiện ích để kiểm tra model/tokenizer
+- `requirements.txt` — danh sách package Python
+- `diagrams/` — (nếu có) sơ đồ ERD hoặc flowchart Mermaid
+- `uploads/` — nơi chứa tệp tải lên (thư mục và ví dụ subfolders như `news/`)
+
+Xem nhanh source chính: `app/main.py`, `app/models.py`, `app/sentiment_model.py`, `app/negative_support_vector_rag_chatbot.py`.
+
+## 3. Luồng hoạt động chính (theo mã nguồn)
+
+1) Sinh viên gửi feedback
+	 - Frontend gửi `POST /feedback` tới backend.
+	 - Backend gọi `sentiment_model.predict_sentiment()` (nội bộ) để phân loại `POS`/`NEG`.
+	 - Lưu feedback vào bảng `feedbacks` (trong `app/models.py`).
+	 - Nếu feedback có nhãn `NEG`, background task sẽ tạo embedding (sentence-transformers) và gọi `negative_support_vector_rag_chatbot.upsert_feedback_embedding()` để lưu vào vectorstore (Postgres+pgvector nếu cấu hình hoặc local fallback).
+	 - Có thể khởi tạo RAG-retrieval để trả lời hỗ trợ tự động (xem `negative_support_rag_chatbot.py`).
+
+2) Chatbot endpoint
+	 - `POST /api/chat` (hoặc route tương đương trong `app/main.py`) nhận câu hỏi, lưu `chat_messages`, gọi module RAG/LLM để sinh phản hồi.
+
+3) Admin
+	 - Các route quản trị đọc từ `crud.py`/`models.py` để quản lý users, subjects, news, surveys, alerts.
+
+## 4. Cách chạy local (chi tiết)
+
+1) Tạo virtualenv và cài dependency:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2) Tạo file `.env` ở thư mục gốc với tối thiểu:
+
+- `DB_URL=sqlite:///./feedback_system.db`  (phát triển nhanh)
+- `SENTIMENT_MODEL_REF=phobert_student_feedback_sentiment`
+- (tuỳ chọn) `GROQ_API_KEY` nếu dùng Groq dịch vụ RAG/toxic
+
+3) Khởi chạy backend:
+
+```powershell
+uvicorn app.main:app --reload --port 8000
+```
+
+4) Mở các trang tĩnh trong `frontend/` hoặc tích hợp frontend dev server nếu bạn có cấu trúc React.
+
+## 5. Database & Vectorstore
+
+- Dev: sử dụng SQLite (file local) theo `DB_URL` mặc định.
+- Production: khuyến nghị PostgreSQL + `pgvector` để lưu embedding và truy vấn vector hiệu quả.
+	- Thiết lập extension trong Postgres (quyền superuser):
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+	- Cập nhật `.env`: `DB_URL=postgresql+psycopg2://user:pass@host:5432/dbname`
+	- `app/negative_support_vector_rag_chatbot.py` đã có logic để dùng Postgres khi `DB_URL` trỏ tới Postgres.
+
+## 6. Models & files lớn
+
+- `phobert_student_feedback_sentiment/` chứa tokenizer và model; tránh commit các file weights lớn (`.safetensors`) lên Git nếu không dùng Git LFS.
+- `inspect_models.py` là script hỗ trợ kiểm tra model/tokenizer hiện có.
+
+## 7. Diagrams
+
+- Nếu cần ERD/flow, xem `diagrams/` trong repo (nếu tồn tại). Nếu muốn mình xuất PNG từ Mermaid, mình có thể làm (cần `mmdc` hoặc Docker).
+
+## 8. Ghi chú vận hành
+
+- Không commit `.env` hay API keys.
+- Nếu bạn muốn dùng GitHub Actions / CI để deploy, mình có thể tạo workflow mẫu.
+
+## 9. Tiếp theo?
+
+- Mình đã chỉnh `README.md` để sát với `Student_feedback_system` trong repo. Muốn mình commit và push thay đổi này lên `origin/main` bây giờ không? (Bạn sẽ cần xác thực nếu Git yêu cầu PAT).
+
+---
+
+File này được viết lại trực tiếp theo mã nguồn của bạn, không sao chép từ nguồn khác.
 - `app/` — backend (API, models, CRUD, chatbots, sentiment)
 - `frontend/` — trang tĩnh (login, student feedback, admin)
 - `phobert_student_feedback_sentiment/` — tokenizer + model local dùng để phân tích sentiment
@@ -203,24 +315,24 @@ Sơ đồ luồng hoạt động đơn giản dưới đây mô tả dòng chín
 ```mermaid
 %% See diagrams/system_flow.mmd for source
 flowchart TD
-	S[Student] -->|submit feedback| F[POST /feedback]
-	F --> M[Sentiment model (PhoBERT)]
-	M -->|POS| Store[Store feedback]
-	Store --> Ack[Send acknowledgement]
-	M -->|NEG| StoreNeg[Store feedback]
-	StoreNeg --> BG[Background task]
-	BG --> Emb[Generate embedding\n(sentence-transformers)]
-	Emb --> Upsert[Upsert embedding to vector store\n(Postgres + pgvector)]
-	Upsert --> RAG[Negative-support RAG\n(retrieval + Groq)]
-	RAG --> Reply[Reply to student (support message)]
-	RAG -->|escalated| Alert[Create Alert]
-	Alert --> Admin[Admin dashboard / Email alert]
+	S[Student] -->|submit feedback| F["POST /feedback"]
+	F --> M["Sentiment model (PhoBERT)"]
+	M -->|POS| Store["Store feedback"]
+	Store --> Ack["Send acknowledgement"]
+	M -->|NEG| StoreNeg["Store feedback"]
+	StoreNeg --> BG["Background task"]
+	BG --> Emb["Generate embedding<br/>(sentence-transformers)"]
+	Emb --> Upsert["Upsert embedding to vector store<br/>(Postgres + pgvector)"]
+	Upsert --> RAG["Negative-support RAG<br/>(retrieval + Groq)"]
+	RAG --> Reply["Reply to student (support message)"]
+	RAG -->|escalated| Alert["Create Alert"]
+	Alert --> Admin["Admin dashboard / Email alert"]
 
-	Chat[Student chat] --> ChatAPI[POST /api/chat]
-	ChatAPI --> ChatModel[Sentiment check & save]
+	Chat["Student chat"] --> ChatAPI["POST /api/chat"]
+	ChatAPI --> ChatModel["Sentiment check & save"]
 	ChatModel -->|risk| Alert
 
-	Admin --> Manage[Manage users / surveys / news]
+	Admin --> Manage["Manage users / surveys / news"]
 ```
 
 Hoặc xem file sơ đồ luồng tại `diagrams/system_flow.mmd`.
