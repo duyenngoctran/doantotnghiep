@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập hệ thống phản hồi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- AdminLTE + Bootstrap (no icon fonts) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      background: linear-gradient(145deg, #ededed 10%, #ededed 90%);
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .page-center {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px 12px;
+    }
+
+    .login-card {
+      width: 400px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+      animation: fadeIn 0.6s ease;
+      overflow: hidden;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== Logo trường ===== */
+    .school-logo {
+      max-width: 130px;
+      height: auto;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.15));
+    }
+
+    .login-logo span {
+      display: block;
+      font-weight: 600;
+      color: #e36a00;
+      font-size: 1.2rem;
+      margin-top: 8px;
+    }
+
+    .text-subschool {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    /* ===== Input group đẹp mắt ===== */
+    .input-group {
+      border: 1px solid #ddd;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: 0.2s all;
+    }
+
+    .input-group:focus-within {
+      border-color: #e36a00;
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+    }
+
+    .input-group-text {
+      background: #f8f9fa;
+      border: none;
+      color: #e36a00;
+      width: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-control {
+      border: none;
+      border-radius: 0;
+      padding: 12px 16px;
+      height: 44px;
+      box-shadow: none !important;
+    }
+
+    .form-control:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+   /* ===== Nút đăng nhập ===== */
+.btn-primary {
+  background-color: #ff7a00 !important; /* màu cam */
+  border-color: #ff7a00 !important;
+  color: #ffffff !important;
+
+  border-radius: 30px;
+  font-weight: 500;
+  transition: all 0.2s;
+  height: 44px;
+  margin-top: 8px;
+}
+
+.btn-primary:hover {
+  background-color: #e36a00 !important; /* cam đậm hơn khi hover */
+  border-color: #e36a00 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+}
+
+    #msg {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-center">
+    <div class="login-card card">
+      <div class="card-body login-card-body text-center">
+        <div class="login-logo mb-3">
+          <!-- Thay ảnh logo của bạn tại đây -->
+          <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Logo_DAI_NAM.png" alt="Logo trường Đại học Đại Nam" class="school-logo">
+          <span>Hệ thống phản hồi sinh viên</span>
+          <div class="text-subschool">Trường Đại học Đại Nam</div>
+        </div>
+
+        <p class="login-box-msg text-muted">Vui lòng đăng nhập để tiếp tục</p>
+
+        <form id="loginForm" class="text-left">
+          <div class="input-group mb-3">
+            <input type="text" id="username" name="username" class="form-control" placeholder="Tài khoản" required>
+          </div>
+
+          <div class="input-group mb-3">
+            <input type="password" id="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+
+          <div id="msg"></div>
+        </form>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API = "";
+
+    const form = document.getElementById("loginForm");
+    const msg  = document.getElementById("msg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+  msg.className = "text-info";
+  msg.innerHTML = 'Đang kiểm tra thông tin...';
+
+      try {
+        const formData = new FormData(form);
+        const res = await fetch(`${API}/login`, { method: "POST", body: formData });
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.className = "text-danger";
+          msg.innerHTML = (data.detail || "Sai thông tin đăng nhập!");
+          return;
+        }
+
+        const payload = {
+          user_id: data.user_id,
+          class_id: data.class_id,
+          class_name: data.class_name,
+          fullname: data.fullname,
+          role: data.role
+        };
+        localStorage.setItem("userInfo", JSON.stringify(payload));
+
+  msg.className = "text-success";
+  msg.innerHTML = 'Đăng nhập thành công!';
+
+        setTimeout(() => {
+          if (data.role === "admin")
+            window.location.href = "/frontend/admin_dashboard.html";
+          else
+            window.location.href = "/frontend/student_feedback.html";
+        }, 600);
+
+      } catch (err) {
+        msg.className = "text-warning";
+        msg.innerHTML = 'Không thể kết nối server!';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

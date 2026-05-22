@@ -1,0 +1,28 @@
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.log
+feedback_system.db
+*.sqlite3
+*.db
+
+# Oversized local model weights - keep out of normal GitHub commits
+phobert_student_feedback_sentiment/model.safetensors
+
+# User uploads should not be committed
+uploads/*
+!uploads/.gitkeep
+uploads/news/*
+!uploads/news/.gitkeep
+
+# Local editor files
+.vscode/
+.idea/

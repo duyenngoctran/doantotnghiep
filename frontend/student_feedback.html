@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đánh giá môn học – Đại học Đại Nam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- (Tùy chọn) Favicon/App Icons -->
+  <link rel="icon" type="image/png" href="/assets/img/logo-dnu-32.png">
+  <link rel="apple-touch-icon" href="/assets/img/logo-dnu-180.png">
+
+  <!-- AdminLTE + Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.6/css/dataTables.bootstrap4.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs4@1.13.6/js/dataTables.bootstrap4.min.js"></script>
+
+  <style>
+    :root{
+      --dnu-orange:#f37021; --dnu-orange-600:#e45f0d; --dnu-orange-50:#fff4ec;
+      --ink-900:#0f172a; --ink-700:#334155; --ink-500:#64748b;
+      --line:#e5e7eb; --bg:#ffffff;
+    }
+    html,body{height:100%;background:var(--bg);font-family:"Inter","Roboto",system-ui,-apple-system,Segoe UI,Helvetica,Arial;color:var(--ink-900)}
+
+    .navbar-dnu{background:var(--dnu-orange);color:#fff!important;box-shadow:0 1px 6px rgba(0,0,0,.08)}
+    .navbar-dnu .topbar-container{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;padding-left:14px;padding-right:14px}
+    .navbar-dnu .navbar-brand{color:#fff!important;font-weight:700;letter-spacing:.3px}
+    .navbar-dnu .brand-sub{font-weight:500;opacity:.95;margin-left:.5rem;color:#fff;letter-spacing:.2px}
+    .navbar-dnu .btn-outline-light{border-color:rgba(255,255,255,.7);color:#fff}
+    .navbar-dnu .btn-outline-light:hover{background:#fff;color:var(--dnu-orange)}
+    .navbar-dnu .navbar-brand{flex:0 0 auto;display:flex;align-items:center;min-width:0;margin-right:10px}
+    .navbar-dnu .btn{white-space:nowrap}
+
+    .topbar-tabs{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      flex:1 1 auto;
+      min-width:0;
+      margin:0 8px 0 14px;
+      padding:0;
+      overflow-x:visible;
+      white-space:nowrap;
+      list-style:none;
+    }
+    .topbar-tabs .nav-link{
+      border:1px solid rgba(255,255,255,.68);
+      color:#fff;
+      border-radius:999px;
+      padding:.3rem .7rem;
+      font-weight:600;
+      line-height:1.2;
+      text-align:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.08);
+      transition:all .16s ease;
+      font-size:.88rem;
+    }
+    .topbar-tabs .nav-link.active,
+    .topbar-tabs .nav-link:hover{
+      background:#fff;
+      color:var(--dnu-orange-600);
+      border-color:#fff;
+    }
+    .topbar-user{display:flex;align-items:center;gap:8px;flex:0 0 auto;min-width:0}
+    #studentInfo{
+      display:inline-block;
+      max-width:220px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      vertical-align:middle;
+    }
+
+    .brand-slot{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.88);border-radius:10px;padding:3px 6px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .dnu-logo{height:28px;width:auto;display:block;filter:drop-shadow(0 0 .8px #fff)}
+    @media (max-width:576px){.dnu-logo{height:24px}.brand-slot{padding:2px 5px}}
+
+    .hero{background:linear-gradient(0deg,rgba(243,112,33,.06),rgba(243,112,33,.06)),#fff;border-bottom:1px solid var(--line);padding:24px 0 12px;text-align:center}
+    .hero h1{font-size:clamp(1.25rem,1rem + 1.5vw,1.75rem);font-weight:800;margin:0}
+    .hero p{color:var(--ink-500);margin:8px 0 0;font-size:.98rem}
+
+    /* Tab animation: mượt hơn khi chuyển nội dung */
+    .tab-content .tab-pane{
+      transition:opacity .52s cubic-bezier(.16,1,.3,1), transform .52s cubic-bezier(.16,1,.3,1);
+      will-change:opacity, transform;
+      backface-visibility:hidden;
+      transform:translateZ(0);
+    }
+    .tab-content .tab-pane.fade{
+      opacity:0;
+      transform:translateY(14px);
+      pointer-events:none;
+    }
+    .tab-content .tab-pane.fade.show.active{
+      opacity:1;
+      transform:translateY(0);
+      pointer-events:auto;
+    }
+    .tab-content .tab-pane.is-exiting{
+      opacity:0;
+      transform:translateY(-8px);
+      pointer-events:none;
+    }
+    .tab-content .tab-pane.is-entering{
+      opacity:0;
+      transform:translateY(16px);
+    }
+    .tab-content.is-switching .tab-pane{
+      pointer-events:none;
+    }
+    @media (prefers-reduced-motion: reduce){
+      .tab-content .tab-pane{transition:none}
+    }
+
+    .card{border-radius:12px;border:1px solid var(--line);box-shadow:0 2px 10px rgba(0,0,0,.03)}
+    .card-header{border-bottom:1px solid var(--line)}
+    .card-dnu .card-header{background:var(--dnu-orange-50)}
+    .btn-dnu{background:var(--dnu-orange);border:1px solid var(--dnu-orange);color:#fff;font-weight:600}
+    .btn-dnu:hover{background:var(--dnu-orange-600);border-color:var(--dnu-orange-600)}
+    .btn-dnu-ghost{background:#fff;color:var(--dnu-orange);border:1px solid var(--dnu-orange);font-weight:600}
+    .btn-dnu-ghost:hover{background:var(--dnu-orange-50)}
+    .form-control:focus{border-color:var(--dnu-orange);box-shadow:0 0 0 .2rem rgba(243,112,33,.15)}
+    label{font-weight:600;color:var(--ink-700)}
+    .result-alert{display:none}
+    .alert-dnu{border-left:4px solid var(--dnu-orange);background:var(--dnu-orange-50);color:var(--ink-900)}
+    .callout-dnu{border-left:4px solid var(--dnu-orange);background:#fff;border:1px solid var(--line);border-radius:12px}
+    .callout-dnu h5{font-weight:700;color:var(--ink-900)}
+    .news-list{display:grid;gap:16px}
+    .survey-table-wrap{border:1px solid #e7edf4;border-radius:12px;overflow:hidden;background:#fff}
+    .survey-table{width:100%;margin:0}
+    .survey-table thead th{background:#fff8f2;color:var(--ink-900);font-weight:700;border-bottom:1px solid #e7edf4}
+    .survey-table td,.survey-table th{vertical-align:middle}
+    .survey-status-badge{font-size:.78rem;padding:6px 10px;border-radius:999px;font-weight:700;display:inline-block}
+    .survey-editor{margin-top:14px;border:1px solid #f0d8c7;border-radius:14px;background:linear-gradient(180deg,#fffaf7 0%,#fff 100%);padding:14px;display:none}
+    .survey-editor-title{font-size:1.02rem;font-weight:800;margin-bottom:4px}
+    .survey-editor-meta{color:var(--ink-500);font-size:.88rem;margin-bottom:12px}
+    .survey-options{display:grid;gap:10px}
+    .survey-option{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:.85rem .95rem;
+      display:flex;
+      align-items:flex-start;
+      gap:.7rem;
+      cursor:pointer;
+      background:#fff;
+      transition:border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .survey-option:hover{border-color:var(--dnu-orange);background:#fff8f2;transform:translateY(-1px)}
+    .survey-option input{margin-top:.22rem;flex-shrink:0}
+    .survey-option.selected{border-color:var(--dnu-orange);background:#fff4ec}
+    .survey-option-text{color:var(--ink-800);line-height:1.5;font-weight:500}
+    .survey-meta{font-size:.88rem;color:var(--ink-500)}
+    .survey-editor textarea{min-height:120px;resize:vertical}
+    @media (max-width: 576px){
+      .survey-editor .btn{width:100%}
+      .survey-editor .d-flex{display:block !important}
+    }
+    .news-feed-shell{max-width:980px;margin:0 auto}
+    .news-item{
+      border:1px solid #edf2f7;
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow:0 8px 20px rgba(15,23,42,.07);
+      transition:transform .18s ease, box-shadow .2s ease;
+    }
+    .news-item:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(15,23,42,.12)}
+    .news-item-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px 9px;
+      background:linear-gradient(180deg,#fff9f5 0%,#fff 100%);
+      border-bottom:1px solid #f1f5f9;
+    }
+    .news-author-wrap{display:flex;align-items:center;gap:10px;min-width:0}
+    .news-avatar{
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg,var(--dnu-orange) 0%,var(--dnu-orange-600) 100%);
+      color:#fff;font-weight:800;font-size:.88rem;
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      box-shadow:0 8px 16px rgba(243,112,33,.24);
+    }
+    .news-author-meta{min-width:0}
+    .news-author-name{font-weight:800;color:var(--ink-900);line-height:1.2;font-size:1.02rem}
+    .news-author-sub{font-size:.8rem;color:var(--ink-500);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .news-dot{width:4px;height:4px;border-radius:50%;background:#cbd5e1;display:inline-block}
+    .news-time{font-size:.76rem;color:var(--ink-500);white-space:nowrap}
+    .news-item-body{
+      padding:10px 12px 12px;
+      white-space:pre-wrap;
+      color:var(--ink-800);
+      font-size:.94rem;
+      line-height:1.55;
+    }
+    .news-media{
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#f8fafc;
+    }
+    .news-media img,
+    .news-media video{
+      width:100%;
+      display:block;
+      background:#000;
+      max-height:420px;
+      object-fit:cover;
+    }
+    .news-media img{
+      width:auto;
+      max-width:100%;
+      height:auto;
+      object-fit:contain;
+      border-top:1px solid #eef2f7;
+      border-bottom:1px solid #eef2f7;
+    }
+    .news-media video{border-top:1px solid #eef2f7;border-bottom:1px solid #eef2f7}
+    .news-item-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      padding:9px 12px 10px;
+      align-items:center;
+      border-top:1px solid #f1f5f9;
+      background:#fff;
+    }
+    .news-action-btn{
+      border:1px solid #e2e8f0;
+      background:#fff;
+      color:var(--ink-700);
+      font-weight:700;
+      border-radius:12px;
+      padding:.5rem .9rem;
+      box-shadow:0 2px 8px rgba(15,23,42,.04);
+      transition:transform .16s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+    }
+    .news-action-btn:hover{background:#fff7f1;color:var(--dnu-orange-600);transform:translateY(-1px);box-shadow:0 8px 16px rgba(15,23,42,.08)}
+    .news-action-btn.is-liked{background:var(--dnu-orange);border-color:var(--dnu-orange);color:#fff;box-shadow:0 10px 18px rgba(243,112,33,.22)}
+    .news-action-icon{margin-right:.4rem}
+    .news-stats{font-size:.86rem;color:var(--ink-500);font-weight:700;display:flex;align-items:center;gap:4px}
+    .news-stats strong{color:var(--ink-900)}
+    .news-comments-panel{
+      border-top:1px solid #eef2f7;
+      background:#fbfcfe;
+      padding:12px 16px 16px;
+    }
+    .news-comments-list{display:grid;gap:10px;margin-bottom:12px}
+    .news-comment-item{
+      border:1px solid #e8eef5;
+      border-radius:14px;
+      background:#fff;
+      padding:10px 12px;
+      box-shadow:0 2px 8px rgba(15,23,42,.03);
+    }
+    .news-comment-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--ink-500);margin-bottom:6px}
+    .news-comment-author{font-weight:800;color:var(--dnu-orange-600)}
+    .news-comment-text{color:var(--ink-700);white-space:pre-wrap;word-break:break-word;line-height:1.55}
+    .news-comment-form{margin-top:10px}
+    .news-comment-form textarea{resize:vertical;min-height:76px;border-radius:14px}
+    .news-comment-form .btn{border-radius:12px}
+    table.dataTable thead th{background:var(--dnu-orange);color:#fff;border-color:var(--dnu-orange)}
+      .news-detail-modal .modal-content{border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(15,23,42,.2)}
+      .news-detail-modal .modal-header{background:linear-gradient(180deg,#fff8f2 0%,#fff 100%);border-bottom:1px solid #edf2f7}
+      .news-detail-modal .modal-body{padding:0;background:#f8fafc}
+      .news-detail-shell{max-height:80vh;overflow:auto}
+      .news-detail-post{background:#fff;border-bottom:1px solid #edf2f7}
+      .news-detail-post .news-item{border:none;border-radius:0;box-shadow:none;transform:none !important}
+      .news-detail-post .news-item-head{padding:16px 18px 12px}
+      .news-detail-post .news-item-body{padding:14px 18px 16px;font-size:1.02rem}
+      .news-detail-post .news-media img,
+      .news-detail-post .news-media video{border-radius:0;max-height:520px}
+      .news-detail-comments{padding:16px 18px 18px}
+      .news-detail-comments-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+      .news-detail-comments-title h5{margin:0;font-size:1rem;font-weight:800;color:var(--ink-900)}
+      .news-detail-comments-count{font-size:.85rem;color:var(--ink-500);font-weight:700}
+      .news-detail-comments-list{display:grid;gap:10px;max-height:280px;overflow:auto;padding-right:4px}
+      .news-detail-comments-empty{border:1px dashed #dbe4ee;border-radius:16px;background:#fff;padding:18px;text-align:center;color:var(--ink-500)}
+      .news-detail-comment-form{margin-top:14px;background:#fff;border:1px solid #e8eef5;border-radius:16px;padding:12px}
+      .news-detail-comment-form textarea{resize:vertical;min-height:86px;border-radius:14px}
+      .news-detail-comment-form .btn{border-radius:12px}
+    footer.main-footer{background:#fff;border-top:1px solid var(--line);color:var(--ink-700);padding:10px 0;font-size:.925rem}
+    :focus-visible{outline:3px solid rgba(243,112,33,.45);outline-offset:2px}
+
+    /* ===== Chat widget (floating like Messenger) ===== */
+    .chat-launcher{
+      position:fixed;right:20px;bottom:20px;z-index:1050;width:56px;height:56px;border-radius:50%;
+      border:none;box-shadow:0 8px 24px rgba(0,0,0,.18);background:var(--dnu-orange);color:#fff;
+      font-size:22px;font-weight:700;display:none;align-items:center;justify-content:center;cursor:pointer;
+    }
+    .chat-panel{
+      position:fixed;right:20px;bottom:90px;z-index:1050;width:min(380px,calc(100% - 32px));
+      background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.18);
+      display:none;overflow:hidden;
+    }
+    .chat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--dnu-orange-50);border-bottom:1px solid var(--line)}
+    .chat-title{font-weight:700}
+    .chat-close{border:none;background:transparent;font-size:20px;line-height:1;cursor:pointer}
+    .chat-log{height:360px;overflow-y:auto;padding:12px;background:#fafafa}
+    .msg{display:flex;margin:10px 0;gap:8px}
+    .msg.me{justify-content:flex-end}
+    .bubble{max-width:76%;padding:10px 12px;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.05);white-space:pre-wrap;word-wrap:break-word}
+    .me .bubble{background:#2563eb;color:#fff;border-bottom-right-radius:6px}
+    .bot .bubble{background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px}
+    .time{font-size:.78rem;color:#94a3b8;margin-top:2px}
+    .typing .dot{width:6px;height:6px;border-radius:50%;background:#cbd5e1;display:inline-block;margin:0 2px;animation:blink 1.4s infinite both}
+    .typing .dot:nth-child(2){animation-delay:.2s}.typing .dot:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
+    .chat-input textarea{flex:1;resize:none;max-height:120px;min-height:44px}
+    .chat-send{min-width:84px;border:none;border-radius:10px;padding:10px 12px;font-weight:600;background:var(--dnu-orange);color:#fff}
+    .chat-send:disabled{opacity:.6;cursor:not-allowed}
+
+    /* ===== Center chatbot (ask-anything) ===== */
+    .general-chat-shell{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow:0 10px 26px rgba(15,23,42,.08);
+    }
+    .general-chat-head{
+      padding:12px 14px;
+      background:linear-gradient(90deg,#fff4ec 0%,#fff 100%);
+      border-bottom:1px solid var(--line);
+      font-weight:800;
+      color:var(--ink-900);
+    }
+    .general-chat-sub{
+      color:var(--ink-500);
+      font-size:.88rem;
+      font-weight:600;
+      margin-top:2px;
+    }
+    .general-chat-log{
+      height:min(52vh,460px);
+      overflow-y:auto;
+      padding:14px;
+      background:#f8fafc;
+    }
+    .general-msg{display:flex;margin:10px 0;gap:8px}
+    .general-msg.me{justify-content:flex-end}
+    .general-bubble{
+      max-width:82%;
+      padding:10px 12px;
+      border-radius:14px;
+      box-shadow:0 1px 2px rgba(0,0,0,.05);
+      white-space:pre-wrap;
+      word-wrap:break-word;
+    }
+    .general-msg.me .general-bubble{background:#2563eb;color:#fff;border-bottom-right-radius:6px}
+    .general-msg.bot .general-bubble{background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px;color:var(--ink-800)}
+    .general-time{font-size:.78rem;color:#94a3b8;margin-top:2px}
+    .general-chat-input-wrap{padding:12px;border-top:1px solid var(--line);background:#fff}
+    .general-chat-input-wrap textarea{width:100%;resize:none;min-height:54px;max-height:160px;border-radius:12px;padding:10px 12px}
+    .general-chat-actions{display:flex;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .general-chat-actions .btn{border-radius:10px}
+
+    .saving-feedback-modal .modal-content{
+      border-radius:14px;
+      border:1px solid var(--line);
+      box-shadow:0 12px 34px rgba(15,23,42,.16);
+    }
+    .saving-feedback-body{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:18px 20px;
+      color:var(--ink-800);
+      font-weight:600;
+    }
+    .saving-feedback-spinner{
+      width:1.35rem;
+      height:1.35rem;
+      border-width:.2em;
+      color:var(--dnu-orange);
+    }
+
+    /* Chatbot mode: hạn chế scroll toàn trang, chỉ cho phép scroll trong khung chat */
+    body.chatbot-no-scroll{overflow:hidden}
+    body.chatbot-no-scroll footer.main-footer{display:block}
+    body.chatbot-no-scroll{
+      --chatbot-topbar-h:58px;
+      --chatbot-footer-h:58px;
+    }
+    body.chatbot-no-scroll .content-wrapper .container{
+      width:100vw;
+      max-width:none;
+      padding-left:6px;
+      padding-right:6px;
+    }
+    body.chatbot-no-scroll .content-wrapper{
+      height:calc(100dvh - var(--chatbot-topbar-h) - var(--chatbot-footer-h));
+      overflow:hidden;
+    }
+    body.chatbot-no-scroll .content-wrapper .content{
+      height:100%;
+      padding-bottom:0;
+      padding-left:0;
+      padding-right:0;
+    }
+    body.chatbot-no-scroll .content-wrapper .content > .container{height:100%}
+    body.chatbot-no-scroll .tab-content{
+      height:100%;
+      padding-top:.35rem !important;
+    }
+    body.chatbot-no-scroll #tab-chatbot{
+      height:100%;
+      margin-bottom:0;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    body.chatbot-no-scroll #tab-chatbot .general-chat-shell{margin-bottom:0}
+    body.chatbot-no-scroll #tab-chatbot .general-chat-shell{
+      flex:1;
+      height:100%;
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    body.chatbot-no-scroll #tab-chatbot .general-chat-log{
+      flex:1;
+      min-height:0;
+      height:auto;
+    }
+    body.chatbot-no-scroll #tab-chatbot .general-chat-input-wrap{flex-shrink:0}
+
+    @media (max-width: 768px){
+      .navbar-dnu .topbar-container{gap:6px;padding-left:10px;padding-right:10px}
+      .topbar-tabs{margin:0 6px;gap:6px}
+      .topbar-tabs .nav-link{padding:.3rem .62rem;font-size:.84rem}
+      .news-feed-shell{max-width:100%}
+      body.chatbot-no-scroll{
+        --chatbot-topbar-h:54px;
+        --chatbot-footer-h:82px;
+      }
+      body.chatbot-no-scroll .content-wrapper .container{
+        width:100vw;
+        max-width:none;
+        padding-left:2px;
+        padding-right:2px;
+      }
+      body.chatbot-no-scroll #tab-chatbot .general-chat-shell{
+        height:100%;
+      }
+    }
+
+    @media (max-width: 1440px){
+      .topbar-user .nav-item.mr-2{display:none !important}
+      .topbar-tabs .nav-link{padding:.3rem .58rem;font-size:.83rem}
+      .topbar-tabs{gap:5px;margin:0 6px}
+    }
+
+    @media (max-width: 1180px){
+      .brand-sub{display:none !important}
+    }
+
+    /* News mode: khóa scroll toàn trang, chỉ scroll trong danh sách bài viết */
+    body.news-no-scroll{
+      overflow:hidden;
+      --news-topbar-h:58px;
+      --news-footer-h:58px;
+    }
+    body.news-no-scroll footer.main-footer{display:block}
+    body.news-no-scroll .content-wrapper{
+      height:calc(100dvh - var(--news-topbar-h) - var(--news-footer-h));
+      overflow:hidden;
+    }
+    body.news-no-scroll .content-wrapper .content{
+      height:100%;
+      padding-bottom:0;
+    }
+    body.news-no-scroll .content-wrapper .content > .container{height:100%}
+    body.news-no-scroll .tab-content{height:100%}
+    body.news-no-scroll #tab-news{
+      height:100%;
+      min-height:0;
+      overflow-y:auto;
+      overflow-x:hidden;
+      overscroll-behavior:contain;
+      padding-right:10px;
+    }
+    body.news-no-scroll #tab-news,
+    body.chatbot-no-scroll #tab-chatbot .general-chat-log{
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+    }
+    body.news-no-scroll #tab-news::-webkit-scrollbar,
+    body.chatbot-no-scroll #tab-chatbot .general-chat-log::-webkit-scrollbar{
+      width:0;
+      height:0;
+      display:none;
+    }
+
+    /* Feedback mode: khóa scroll toàn trang, chỉ scroll trong tab đánh giá */
+    body.feedback-no-scroll{
+      overflow:hidden;
+      --feedback-topbar-h:58px;
+      --feedback-footer-h:58px;
+    }
+    body.feedback-no-scroll footer.main-footer{display:block}
+    body.feedback-no-scroll .content-wrapper{
+      height:calc(100dvh - var(--feedback-topbar-h) - var(--feedback-footer-h));
+      overflow:hidden;
+    }
+    body.feedback-no-scroll .content-wrapper .content{
+      height:100%;
+      padding-bottom:0;
+    }
+    body.feedback-no-scroll .content-wrapper .content > .container{height:100%}
+    body.feedback-no-scroll .tab-content{height:100%}
+    body.feedback-no-scroll #tab-feedback{
+      height:100%;
+      min-height:0;
+      overflow-y:auto;
+      overflow-x:hidden;
+      overscroll-behavior:contain;
+      padding-right:10px;
+    }
+    body.feedback-no-scroll #tab-feedback::-webkit-scrollbar{
+      width:0;
+      height:0;
+      display:none;
+    }
+
+    @media (max-width: 768px){
+      body.news-no-scroll{
+        --news-topbar-h:54px;
+        --news-footer-h:82px;
+      }
+      body.news-no-scroll #tab-news{height:100%}
+      body.feedback-no-scroll{
+        --feedback-topbar-h:54px;
+        --feedback-footer-h:82px;
+      }
+      body.feedback-no-scroll #tab-feedback{height:100%}
+    }
+  </style>
+</head>
+
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-dnu">
+    <div class="container-fluid topbar-container">
+      <div class="navbar-brand d-flex align-items-center" aria-label="Cổng Thông Tin Sinh Viên">
+        <span class="brand-slot">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Logo_DAI_NAM.png" alt="Đại học Đại Nam" class="dnu-logo" />
+        </span>
+        <span class="brand-sub d-none d-sm-inline">Cổng Thông Tin Sinh Viên</span>
+      </div>
+
+      <ul class="navbar-nav topbar-tabs" id="tabs" role="tablist">
+        <li class="nav-item"><a class="nav-link active" href="#tab-news" id="tab-news-btn" role="tab" aria-controls="tab-news" aria-selected="true">Tin tức</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-survey" id="tab-survey-btn" role="tab" aria-controls="tab-survey" aria-selected="false">Khảo sát</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-chatbot" id="tab-chatbot-btn" role="tab" aria-controls="tab-chatbot" aria-selected="false">Chatbot nội quy & học tập</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tab-feedback" id="tab-feedback-btn" role="tab" aria-controls="tab-feedback" aria-selected="false">Đánh giá môn học</a></li>
+      </ul>
+
+      <ul class="navbar-nav topbar-user">
+        <li class="nav-item mr-2 d-none d-sm-inline"><span id="studentInfo" class="text-white-75"></span></li>
+        <li class="nav-item"><button id="btnLogout" class="btn btn-sm btn-outline-light">Đăng xuất</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <div class="content-wrapper">
+    <section class="content">
+      <div class="container">
+        <div class="tab-content pt-3">
+
+          <!-- TAB: Đánh giá môn học -->
+          <div class="tab-pane fade" id="tab-feedback" role="tabpanel">
+            <div id="resultAlert" class="alert alert-dnu result-alert" role="alert"></div>
+
+            <div class="card card-outline card-dnu">
+              <div class="card-header">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                  <h3 class="card-title mb-0">Biểu mẫu đánh giá môn học</h3>
+                  <button type="button" id="btnHistoryPopup" class="btn btn-sm btn-dnu-ghost">Lịch sử đánh giá</button>
+                </div>
+              </div>
+              <div class="card-body">
+                <form id="feedbackForm" novalidate>
+                  <div class="form-group">
+                    <label for="semester_id">Chọn kỳ học</label>
+                    <select id="semester_id" class="form-control" required aria-required="true" aria-describedby="semesterHelp">
+                      <option value="">Đang tải danh sách kỳ học...</option>
+                    </select>
+                    <small id="semesterHelp" class="form-text text-muted">Vui lòng chọn kỳ học trước khi chọn học phần.</small>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="subject_id">Chọn học phần</label>
+                    <select id="subject_id" class="form-control" required aria-required="true" aria-describedby="subjectHelp">
+                      <option value="">Vui lòng chọn kỳ học trước</option>
+                    </select>
+                    <small id="subjectHelp" class="form-text text-muted">Chọn đúng học phần để ban/bộ môn xử lý nhanh hơn.</small>
+                  </div>
+
+                  <div class="form-group mb-0">
+                    <label for="text">Nội dung đánh giá</label>
+                    <textarea id="text" class="form-control" rows="4" placeholder="Ví dụ: Thầy/cô giảng hơi nhanh ở tiết 3, đề nghị bổ sung ví dụ minh họa..." required aria-required="true"></textarea>
+                    <small class="form-text text-muted">Ý kiến của bạn sẽ được chuyển đến giảng viên phụ trách và bộ phận liên quan để xem xét.</small>
+                  </div>
+
+                  <div class="mt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <button id="btnSubmit" type="submit" class="btn btn-dnu">Gửi đánh giá</button>
+                    <div id="loading" class="ml-3 text-muted" style="display:none;">Đang xử lý…</div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: Tin tức -->
+          <div class="tab-pane fade show active" id="tab-news" role="tabpanel">
+            <div id="newsList" class="news-list news-feed-shell"></div>
+            <div id="newsEmpty" class="text-center text-muted" style="display:none;">Hiện chưa có bài viết nào.</div>
+          </div>
+
+          <!-- TAB: Khảo sát -->
+          <div class="tab-pane fade" id="tab-survey" role="tabpanel">
+            <div class="card card-outline card-dnu">
+              <div class="card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <h3 class="card-title mb-0">Khảo sát của lớp bạn</h3>
+              </div>
+              <div class="card-body">
+                <div id="surveyEmpty" class="text-center text-muted py-4" style="display:none;">Chưa có khảo sát nào dành cho lớp của bạn.</div>
+                <div id="surveyTableWrap" class="survey-table-wrap" style="display:none;">
+                  <div class="table-responsive">
+                    <table class="table table-hover survey-table mb-0">
+                      <thead>
+                        <tr>
+                          <th width="70">STT</th>
+                          <th>Khảo sát</th>
+                          <th width="170">Trạng thái</th>
+                          <th width="160" class="text-center">Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody id="surveyTableBody">
+                        <tr><td colspan="4" class="text-center text-muted">Đang tải...</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: Chatbot -->
+          <div class="tab-pane fade" id="tab-chatbot" role="tabpanel">
+            <div class="general-chat-shell">
+              <div class="general-chat-head">
+                Trợ lý nội quy và học tập
+                <div class="general-chat-sub">Chatbot hỗ trợ tra cứu nội quy trường và giải đáp các câu hỏi học tập của sinh viên.</div>
+              </div>
+              <div id="generalChatLog" class="general-chat-log" role="log" aria-relevant="additions"></div>
+              <div class="general-chat-input-wrap">
+                <textarea id="generalChatInput" placeholder="Nhập câu hỏi về nội quy hoặc học tập..."></textarea>
+                <div class="general-chat-actions">
+                  <button type="button" id="generalChatClear" class="btn btn-dnu-ghost">Xóa hội thoại</button>
+                  <button type="button" id="generalChatSend" class="btn btn-dnu">Gửi câu hỏi</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- tab-content -->
+      </div>
+    </section>
+  </div>
+
+  <footer class="main-footer text-sm">
+    <div class="container d-flex flex-column flex-md-row justify-content-between">
+      <span>© Khoa CNTT – Trường Đại học Đại Nam</span>
+      <span><a href="https://dainam.edu.vn" target="_blank" rel="noopener">dainam.edu.vn</a> • Trần Ngọc Duyên</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ===== Modal làm khảo sát ===== -->
+<div class="modal fade" id="surveyEditorModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="surveyEditorTitle">Khảo sát</h5>
+          <div class="small text-muted" id="surveyEditorMeta">-</div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <form id="surveySelectedForm">
+          <input type="hidden" id="selectedSurveyId">
+          <div id="surveyEditorOptions" class="survey-options mb-3"></div>
+          <div class="form-group mb-2">
+            <label class="mb-1" for="surveyEditorText">Nội dung phản hồi khảo sát</label>
+            <textarea id="surveyEditorText" class="form-control" placeholder="Nhập nội dung phản hồi của bạn..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="submit" id="surveySaveBtn" class="btn btn-dnu">Lưu khảo sát</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal loading khi gửi đánh giá ===== -->
+<div class="modal fade saving-feedback-modal" id="savingFeedbackModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="saving-feedback-body">
+        <div class="spinner-border saving-feedback-spinner" role="status" aria-hidden="true"></div>
+        <div>
+          <div>Hệ thống đang xử lý...</div>
+          <div class="small text-muted">Vui lòng chờ trong giây lát.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Popup khi phát hiện tiêu cực ===== -->
+<div class="modal fade" id="negModal" tabindex="-1" role="dialog" aria-labelledby="negModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="negModalLabel">Bạn ổn chứ?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body pt-1">
+        Hệ thống nhận thấy tâm trạng của bạn có vẻ <strong>chưa vui</strong>. Bạn muốn trò chuyện với <strong>chatbot hỗ trợ</strong> ngay không?
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-dnu-ghost" data-dismiss="modal">Để sau</button>
+        <button type="button" class="btn btn-dnu" id="btnNegOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal lịch sử đánh giá môn học ===== -->
+<div class="modal fade" id="feedbackHistoryModal" tabindex="-1" role="dialog" aria-labelledby="feedbackHistoryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="feedbackHistoryModalLabel">Lịch sử đánh giá môn học của bạn</h5>
+          <div class="small text-muted">Các đánh giá gần đây của bạn sẽ hiển thị ở đây.</div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-dnu-ghost" id="btnReloadHistoryModal">Tải lại</button>
+          <button type="button" class="close ml-2" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover table-bordered mb-0" id="feedbackHistoryTable" style="width:100%">
+            <thead><tr><th>Thời gian</th><th>Học phần</th><th>Nội dung đánh giá</th><th class="text-center" width="150">Thao tác</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="feedbackHistoryEmpty" class="text-center text-muted py-4" style="display:none;">Chưa có đánh giá môn học. Hãy bắt đầu chia sẻ ý kiến để nhà trường lắng nghe bạn.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal sửa đánh giá môn học ===== -->
+<div class="modal fade" id="feedbackEditModal" tabindex="-1" role="dialog" aria-labelledby="feedbackEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="feedbackEditModalLabel">Chỉnh sửa đánh giá</h5>
+          <div class="small text-muted">Bạn có thể sửa lại học phần và nội dung đánh giá của mình.</div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <form id="feedbackEditForm" novalidate>
+          <input type="hidden" id="feedbackEditId">
+          <div class="form-group">
+            <label for="feedbackEditSubject">Học phần</label>
+            <select id="feedbackEditSubject" class="form-control" required></select>
+          </div>
+          <div class="form-group mb-0">
+            <label for="feedbackEditText">Nội dung đánh giá</label>
+            <textarea id="feedbackEditText" class="form-control" rows="5" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dnu-ghost" data-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-dnu" id="btnSaveFeedbackEdit">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Modal chi tiết bài viết ===== -->
+<div class="modal fade news-detail-modal" id="newsDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title mb-1">Bài viết chi tiết</h5>
+          <div class="text-muted small">Xem lại nội dung bài viết và bình luận ẩn danh của sinh viên.</div>
+        </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="news-detail-shell">
+          <div id="newsDetailPost" class="news-detail-post"></div>
+          <div class="news-detail-comments">
+            <div class="news-detail-comments-title">
+              <h5>Bình luận ẩn danh</h5>
+              <div class="news-detail-comments-count"><span id="newsDetailCommentsCount">0</span> bình luận</div>
+            </div>
+            <div id="newsDetailCommentsList" class="news-detail-comments-list"></div>
+            <div class="news-detail-comment-form">
+              <textarea id="newsDetailCommentInput" class="form-control" rows="3" placeholder="Viết bình luận ẩn danh..."></textarea>
+              <div class="d-flex align-items-center justify-content-between mt-2">
+                <small class="text-muted">Bình luận sẽ hiển thị ẩn danh cho tất cả sinh viên.</small>
+                <button type="button" id="newsDetailSubmitComment" class="btn btn-dnu btn-sm">Gửi bình luận</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Chat widget: launcher + panel ===== -->
+<button id="chatLauncher" class="chat-launcher" title="Trợ lý sinh viên">💬</button>
+<div id="chatPanel" class="chat-panel" aria-live="polite">
+  <div class="chat-header">
+    <div class="chat-title">Trợ lý sinh viên</div>
+    <button class="chat-close" id="chatClose" aria-label="Đóng">×</button>
+  </div>
+  <div id="chatLog" class="chat-log" role="log" aria-relevant="additions"></div>
+  <div class="chat-input">
+    <textarea id="chatInput" placeholder="Nhập tin nhắn..."></textarea>
+    <button id="chatSend" class="chat-send">Gửi</button>
+  </div>
+</div>
+
+<script>
+  const API = "";          // cùng origin backend → để trống; khác cổng thì "http://localhost:8000"
+  const NEG_GATE = 0.60;   // p_neg >= ngưỡng → gợi ý chat
+  let subjectMap = {};
+  let semesterMap = {};
+  let allClassSubjects = [];
+  let feedbackHistoryCache = [];
+
+  // ===== helper auth & UI =====
+  function getUserInfo(){
+    try{ const raw = localStorage.getItem("userInfo"); return raw ? JSON.parse(raw) : null; }catch{ return null; }
+  }
+  function requireLogin(){
+    const u = getUserInfo();
+    if(!u){ alert("Bạn chưa đăng nhập!"); window.location.href="/frontend/login.html"; return null; }
+    return u;
+  }
+  function renderStudentInfo(u){
+    document.getElementById("studentInfo").textContent = `${u.fullname||u.username} (${u.class_name || 'Lớp ' + (u.class_id||"?")})`;
+  }
+
+  let resultAlertTimer = null;
+  function showResult(message, level = "info"){
+    const $alert = $("#resultAlert");
+    const classMap = {
+      success: "alert-success",
+      danger: "alert-danger",
+      warning: "alert-warning",
+      secondary: "alert-secondary",
+      info: "alert-info",
+    };
+    if(!$alert.length){
+      alert(message);
+      return;
+    }
+    if(resultAlertTimer){
+      clearTimeout(resultAlertTimer);
+      resultAlertTimer = null;
+    }
+    $alert
+      .removeClass("alert-success alert-danger alert-warning alert-secondary alert-info")
+      .addClass(classMap[level] || classMap.info)
+      .text(message)
+      .show();
+    resultAlertTimer = setTimeout(()=>{
+      $alert.fadeOut(180);
+    }, 3500);
+  }
+
+  function asHTML(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function fmtDate(value){
+    if(!value) return "";
+    const date = new Date(value);
+    if(Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  async function fetchHistoryRows(uid){
+    try{
+      const res = await fetch(`${API}/feedbacks/user/${uid}?limit=100&order=desc`);
+      if(!res.ok) throw new Error("fetch history failed");
+      const rows = await res.json();
+      return (Array.isArray(rows) ? rows : []).map(r => {
+        const subjectName = r.subject || subjectMap[r.subject_id] || `Môn #${r.subject_id || "?"}`;
+        return {
+          id: r.id,
+          created_at: r.created_at || "",
+          created_display: fmtDate(r.created_at),
+          subject_id: r.subject_id,
+          subject: subjectName,
+          text: r.text || "",
+        };
+      });
+    }catch(e){
+      console.error(e);
+      showResult("Không tải được lịch sử.","danger");
+      return [];
+    }
+  }
+
+  function renderHistoryRows($tbody, $empty, data){
+    const rows = Array.isArray(data) ? data : [];
+    if(!rows.length){
+      $tbody.html("");
+      $empty.show();
+      return;
+    }
+    $empty.hide();
+    $tbody.html(rows.map(row => `
+      <tr data-feedback-id="${row.id}">
+        <td>${asHTML(row.created_display || "")}</td>
+        <td>${asHTML(row.subject || "")}</td>
+        <td>${asHTML(row.text || "")}</td>
+        <td class="text-center">
+          <div class="btn-group btn-group-sm" role="group" aria-label="Thao tác đánh giá">
+            <button type="button" class="btn btn-outline-primary btn-edit-feedback" data-feedback-id="${row.id}">Sửa</button>
+            <button type="button" class="btn btn-outline-danger btn-delete-feedback" data-feedback-id="${row.id}">Xóa</button>
+          </div>
+        </td>
+      </tr>
+    `).join(""));
+  }
+
+  function getEvaluatedSubjectIds(excludeFeedbackId = null){
+    const evaluated = new Set();
+    feedbackHistoryCache.forEach(item => {
+      if(!item || item.subject_id == null) return;
+      if(excludeFeedbackId != null && String(item.id) === String(excludeFeedbackId)) return;
+      evaluated.add(String(item.subject_id));
+    });
+    return evaluated;
+  }
+
+  async function loadHistory(uid){
+    const data = await fetchHistoryRows(uid);
+    feedbackHistoryCache = data;
+    renderHistoryRows($("#feedbackHistoryTable tbody"), $("#feedbackHistoryEmpty"), data);
+    renderSubjectsBySemester($("#semester_id").val());
+    return data;
+  }
+
+  function renderFeedbackEditSubjectOptions(selectedId, excludeFeedbackId = null){
+    const $subject = $("#feedbackEditSubject");
+    const items = Array.isArray(allClassSubjects) ? allClassSubjects : [];
+    const evaluated = getEvaluatedSubjectIds(excludeFeedbackId);
+    if(!items.length){
+      $subject.html(`<option value="">Chưa có học phần</option>`).prop("disabled", true);
+      return;
+    }
+    const html = [`<option value="">-- Chọn học phần --</option>`].concat(
+      items.map(item => {
+        const isEvaluated = evaluated.has(String(item.id));
+        const label = item.name + (item.teacher ? ` (GV: ${item.teacher})` : "") + (isEvaluated && String(item.id) !== String(selectedId) ? " - Đã đánh giá" : "");
+        return `<option value="${item.id}" ${String(item.id) === String(selectedId) ? "selected" : ""} ${isEvaluated && String(item.id) !== String(selectedId) ? "disabled" : ""}>${asHTML(label)}</option>`;
+      })
+    ).join("");
+    $subject.html(html).prop("disabled", false);
+  }
+
+  function openFeedbackEditModal(item){
+    if(!item) return;
+    $("#feedbackEditId").val(item.id);
+    renderFeedbackEditSubjectOptions(item.subject_id, item.id);
+    $("#feedbackEditText").val(item.text || "");
+    $("#feedbackEditModal").modal("show");
+  }
+
+  async function refreshFeedbackHistoryModal(){
+    const u = getUserInfo();
+    if(!u) return;
+    const data = await fetchHistoryRows(u.user_id);
+    feedbackHistoryCache = data;
+    renderHistoryRows($("#feedbackHistoryTable tbody"), $("#feedbackHistoryEmpty"), data);
+    renderSubjectsBySemester($("#semester_id").val());
+  }
+
+  function getFeedbackHistoryItem(feedbackId){
+    return feedbackHistoryCache.find(item => String(item.id) === String(feedbackId));
+  }
+
+  async function deleteFeedbackEntry(feedbackId){
+    const u = getUserInfo();
+    if(!u) return requireLogin();
+    const item = getFeedbackHistoryItem(feedbackId);
+    if(!item) return alert("Không tìm thấy đánh giá cần xóa.");
+    if(!confirm("Bạn có chắc muốn xóa đánh giá này không?")) return;
+
+    const fd = new FormData();
+    fd.append("user_id", u.user_id);
+    try{
+      const res = await fetch(`${API}/feedbacks/${feedbackId}`, { method:"DELETE", body: fd });
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data.detail || "Không thể xóa đánh giá");
+      await refreshFeedbackHistoryModal();
+      showResult("Đã xóa đánh giá.", "success");
+    }catch(e){
+      alert(e.message || "Không thể xóa đánh giá");
+    }
+  }
+
+  async function saveFeedbackEdit(){
+    const u = getUserInfo();
+    if(!u) return requireLogin();
+    const feedbackId = $("#feedbackEditId").val();
+    const subjectId = $("#feedbackEditSubject").val();
+    const text = $("#feedbackEditText").val().trim();
+    if(!feedbackId) return;
+    if(!subjectId) return alert("Vui lòng chọn học phần.");
+    if(!text) return alert("Vui lòng nhập nội dung đánh giá.");
+
+    const fd = new FormData();
+    fd.append("user_id", u.user_id);
+    fd.append("subject_id", subjectId);
+    fd.append("text", text);
+
+    try{
+      const res = await fetch(`${API}/feedbacks/${feedbackId}`, { method:"PUT", body: fd });
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data.detail || "Không thể cập nhật đánh giá");
+      $("#feedbackEditModal").modal("hide");
+      await refreshFeedbackHistoryModal();
+      showResult("Đã cập nhật đánh giá.", "success");
+    }catch(e){
+      alert(e.message || "Không thể cập nhật đánh giá");
+    }
+  }
+
+  async function openFeedbackHistoryModal(){
+    const u = getUserInfo();
+    if(!u) return requireLogin();
+    const $tbody = $("#feedbackHistoryTable tbody");
+    const $empty = $("#feedbackHistoryEmpty");
+    $tbody.html(`<tr><td colspan="4" class="text-center text-muted">Đang tải...</td></tr>`);
+    $empty.hide();
+    $("#feedbackHistoryModal").modal("show");
+    const data = await fetchHistoryRows(u.user_id);
+    feedbackHistoryCache = data;
+    renderHistoryRows($tbody, $empty, data);
+  }
+
+  async function loadSemesters(){
+    const $sem = $("#semester_id").prop("disabled", true);
+    $sem.html(`<option value="">Đang tải danh sách kỳ học...</option>`);
+    try{
+      const res = await fetch(`${API}/admin/semesters`);
+      if(!res.ok) throw new Error("fetch semesters failed");
+      const data = await res.json();
+      semesterMap = {};
+      $sem.empty().append(`<option value="">-- Chọn kỳ học --</option>`);
+      (Array.isArray(data) ? data : []).forEach(s => {
+        semesterMap[s.id] = s.name;
+        $sem.append(`<option value="${s.id}">${s.name}</option>`);
+      });
+      $sem.prop("disabled", false);
+      return data;
+    }catch(e){
+      console.error(e);
+      $sem.html(`<option value="">Lỗi tải kỳ học</option>`).prop("disabled", true);
+      return [];
+    }
+  }
+
+  function renderSubjectsBySemester(semesterId){
+    const $s = $("#subject_id");
+    subjectMap = {};
+    const evaluated = getEvaluatedSubjectIds();
+
+    if(!semesterId){
+      $s.html(`<option value="">Vui lòng chọn kỳ học trước</option>`).prop("disabled", true);
+      return;
+    }
+
+    const filtered = allClassSubjects.filter(item => String(item.semester_id || "") === String(semesterId));
+    if(!filtered.length){
+      $s.html(`<option value="">Chưa có môn học nào trong kỳ này</option>`).prop("disabled", true);
+      return;
+    }
+
+    $s.empty().append(`<option value="">-- Chọn học phần --</option>`);
+    filtered.forEach(s => {
+      subjectMap[s.id] = s.name;
+      const isEvaluated = evaluated.has(String(s.id));
+      const text = s.name + (s.teacher ? ` (GV: ${s.teacher})` : ``) + (isEvaluated ? ` - Đã đánh giá` : ``);
+      $s.append(`<option value="${s.id}" ${isEvaluated ? "disabled" : ""}>${asHTML(text)}</option>`);
+    });
+    $s.prop("disabled", false);
+  }
+
+  async function loadSubjectsForClass(cid){
+    const $s = $("#subject_id").prop("disabled",true);
+    $s.html(`<option value="">Đang tải...</option>`);
+    
+    if(!cid) {
+      console.warn("No class_id provided");
+      $s.html(`<option value="">Chưa có lớp học</option>`);
+      return;
+    }
+    
+    try{
+      // Sử dụng endpoint mới để load subjects theo class
+      const res = await fetch(`${API}/subjects/by-class/${cid}`);
+      if(!res.ok) {
+        console.error("API error:", res.status, res.statusText);
+        throw new Error(`fetch subjects failed: ${res.status}`);
+      }
+      const data = await res.json();
+      
+      console.log("Loaded subjects for class", cid, ":", data);
+      allClassSubjects = Array.isArray(data) ? data : [];
+      
+      if(!data || data.length === 0){ 
+        console.warn("No subjects found for class", cid);
+        $s.html(`<option value="">Chưa có môn học nào cho lớp này</option>`).prop("disabled",true); 
+      } else { 
+        renderSubjectsBySemester($("#semester_id").val());
+        console.log("Successfully loaded", data.length, "subjects");
+      }
+    }catch(e){ 
+      console.error("Error loading subjects:", e); 
+      $s.html(`<option value="">Lỗi tải học phần</option>`).prop("disabled",true); 
+      showResult("Không tải được danh sách học phần. Vui lòng thử lại sau.","danger"); 
+    }
+  }
+
+  async function loadNews(){
+    const $list = $("#newsList").empty();
+    $("#newsEmpty").hide();
+    try{
+      const res = await fetch(`${API}/news?anon_id=${encodeURIComponent(getNewsAnonId())}`);
+      const rows = await res.json();
+      if(!res.ok) throw new Error("fetch news failed");
+
+      if(!Array.isArray(rows) || !rows.length){
+        $("#newsEmpty").show();
+        return;
+      }
+
+      rows.forEach(item => {
+        const content = item.content || "";
+        const created = fmtDate(item.created_at);
+        const likeCount = Number(item.like_count || 0);
+        const commentCount = Number(item.comment_count || 0);
+        const likedByMe = !!item.liked_by_me;
+        let mediaHtml = "";
+        if(item.media_url){
+          if(item.media_type === "image"){
+            mediaHtml = `<div class="news-media"><img src="${escHTML(item.media_url)}" alt="Hình ảnh bài viết"></div>`;
+          }else if(item.media_type === "video"){
+            mediaHtml = `<div class="news-media"><video controls preload="metadata"><source src="${escHTML(item.media_url)}"></video></div>`;
+          }
+        }
+        $list.append(`
+          <article class="news-item" data-post-id="${item.id}" data-liked="${likedByMe ? 1 : 0}">
+            <div class="news-item-head">
+              <div class="news-author-wrap">
+                <div class="news-avatar">DN</div>
+                <div class="news-author-meta">
+                  <div class="news-author-name">Nhà trường</div>
+                  <div class="news-author-sub">
+                    <span>Thông báo chính thức</span>
+                    <span class="news-dot"></span>
+                    <span class="news-time">${escHTML(created)}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="news-stats"><strong class="news-like-stat">${likeCount}</strong> thích · <strong class="news-comment-stat">${commentCount}</strong> bình luận</div>
+            </div>
+            <div class="news-item-body">${asHTML(content)}</div>
+            ${mediaHtml}
+            <div class="news-item-actions">
+              <button type="button" class="btn btn-sm news-action-btn btn-like-post ${likedByMe ? "is-liked" : ""}" data-post-id="${item.id}">
+                <span class="news-action-icon">♥</span><span class="news-like-label">${likedByMe ? "Đã thích" : "Thích"}</span> (<span class="news-like-count">${likeCount}</span>)
+              </button>
+              <button type="button" class="btn btn-sm news-action-btn btn-toggle-comments" data-post-id="${item.id}">
+                <span class="news-action-icon">💬</span>Bình luận (<span class="news-comment-count">${commentCount}</span>)
+              </button>
+            </div>
+          </article>
+        `);
+      });
+    }catch(e){
+      console.error(e);
+      $list.html(`<div class="text-danger">Không tải được tin tức. Vui lòng thử lại sau.</div>`);
+    }
+  }
+
+  async function loadSurveys(){
+    const u = getUserInfo();
+    const $tbody = $("#surveyTableBody").empty();
+    $("#surveyEmpty").hide();
+    $("#surveyTableWrap").hide();
+    surveyItemsCache = [];
+    if(!u || !u.class_id){
+      $("#surveyEmpty").text("Bạn chưa có lớp được gắn trong hệ thống.").show();
+      return;
+    }
+    try{
+      const res = await fetch(`${API}/surveys?class_id=${encodeURIComponent(u.class_id)}&user_id=${encodeURIComponent(u.user_id)}`);
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "fetch survey failed");
+
+      const items = Array.isArray(data.items) ? data.items : [];
+      surveyItemsCache = items;
+      if(!items.length){
+        $("#surveyEmpty").text("Chưa có khảo sát nào dành cho lớp của bạn.").show();
+        $("#surveyEditorModal").modal("hide");
+        return;
+      }
+      $("#surveyTableWrap").show();
+
+      items.forEach((item, idx) => {
+        const statusBadge = item.responded_by_me
+          ? `<span class="badge badge-success survey-status-badge">Đã hoàn thành</span>`
+          : `<span class="badge badge-warning survey-status-badge">Chưa phản hồi</span>`;
+        $tbody.append(`
+          <tr>
+            <td>${idx + 1}</td>
+            <td>
+              <div class="font-weight-bold">${escHTML(item.title || "")}</div>
+              <div class="text-muted small">${escHTML(item.class_name || `Lớp #${item.class_id}`)} · ${Number(item.option_count || 0)} lựa chọn</div>
+            </td>
+            <td>${statusBadge}</td>
+            <td class="text-center">
+              <button type="button" class="btn btn-sm btn-dnu btn-choose-survey" data-survey-id="${item.id}">Chọn</button>
+            </td>
+          </tr>
+        `);
+      });
+    }catch(e){
+      console.error(e);
+      $("#surveyEmpty").text("Không tải được khảo sát. Vui lòng thử lại sau.").show();
+      $("#surveyEditorModal").modal("hide");
+    }
+  }
+
+  function showSurveyEditor(surveyId){
+    const item = surveyItemsCache.find(x => Number(x.id) === Number(surveyId));
+    if(!item) return;
+
+    const hasOptions = Array.isArray(item.options) && item.options.length > 0;
+    const optionsHtml = hasOptions
+      ? (item.options || []).map(option => {
+          const checked = Number(item.selected_option_id) === Number(option.id);
+          return `
+            <label class="survey-option ${checked ? "selected" : ""}">
+              <input type="radio" name="survey_selected_option" value="${option.id}" ${checked ? "checked" : ""}>
+              <span class="survey-option-text">${escHTML(option.option_text || "")}</span>
+            </label>
+          `;
+        }).join("")
+      : `<div class="text-muted small">Khảo sát này yêu cầu nhập nội dung phản hồi.</div>`;
+
+    const textResponse = (item.text_response || "").trim();
+    $("#selectedSurveyId").val(String(item.id));
+    $("#surveyEditorTitle").text(item.title || "Khảo sát");
+    $("#surveyEditorMeta").text(`${item.class_name || `Lớp #${item.class_id}`} · ${item.responded_by_me ? "Bạn đã phản hồi" : "Bạn chưa phản hồi"}`);
+    $("#surveyEditorOptions").html(optionsHtml);
+    $("#surveyEditorText").val(textResponse);
+    $("#surveySaveBtn").text(item.responded_by_me ? "Cập nhật khảo sát" : "Lưu khảo sát");
+    $("#surveyEditorModal").modal("show");
+  }
+
+  $("#surveyEditorOptions").on("change", "input[type=radio]", function(){
+    const $label = $(this).closest(".survey-option");
+    $label.closest(".survey-options").find(".survey-option").removeClass("selected");
+    $label.addClass("selected");
+  });
+
+  $("#surveyTableBody").on("click", ".btn-choose-survey", function(){
+    const surveyId = $(this).data("survey-id");
+    if(!surveyId) return;
+    showSurveyEditor(surveyId);
+  });
+
+  $("#surveySelectedForm").on("submit", async function(e){
+    e.preventDefault();
+    const u = getUserInfo();
+    if(!u) return requireLogin();
+    const surveyId = $("#selectedSurveyId").val();
+    const optionId = $(this).find("input[type=radio]:checked").val();
+    const responseText = ($("#surveyEditorText").val() || "").trim();
+    if(!optionId && !responseText){
+      alert("Vui lòng chọn khảo sát rồi nhập nội dung.");
+      return;
+    }
+
+    const fd = new FormData();
+    fd.append("user_id", String(u.user_id));
+    if(optionId) fd.append("option_id", String(optionId));
+    if(responseText) fd.append("response_text", responseText);
+    try{
+      $("#surveySaveBtn").prop("disabled", true);
+      const res = await fetch(`${API}/surveys/${surveyId}/response`, { method:"POST", body: fd });
+      const data = await res.json().catch(()=>({}));
+      if(!res.ok) throw new Error(data.detail || "Không thể gửi khảo sát");
+      await loadSurveys();
+      $("#surveyEditorModal").modal("hide");
+      alert("Đã lưu khảo sát. Trạng thái đã chuyển sang hoàn thành.");
+    }catch(err){
+      alert(err.message || "Không thể gửi khảo sát");
+    }finally{
+      $("#surveySaveBtn").prop("disabled", false);
+    }
+  });
+
+  function getNewsAnonId(){
+    let id = localStorage.getItem("news_anon_id");
+    if(!id){
+      id = `anon-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+      localStorage.setItem("news_anon_id", id);
+    }
+    return id;
+  }
+
+  function updateNewsCardStats($card, likeCount, commentCount, likedByMe){
+    $card.attr("data-liked", likedByMe ? "1" : "0");
+    $card.find(".news-like-count").text(likeCount);
+    $card.find(".news-comment-count").text(commentCount);
+    $card.find(".news-like-stat").text(likeCount);
+    $card.find(".news-comment-stat").text(commentCount);
+    $card.find(".btn-like-post")
+      .toggleClass("is-liked", likedByMe)
+      .find(".news-like-label")
+      .text(likedByMe ? "Đã thích" : "Thích");
+  }
+
+  function renderNewsComments($panel, comments){
+    if(!Array.isArray(comments) || !comments.length){
+      $panel.find(".news-comments-list").html(`<div class="text-muted">Chưa có bình luận nào. Hãy là người đầu tiên.</div>`);
+      return;
+    }
+    const html = comments.map(c => {
+      const created = fmtDate(c.created_at);
+      return `
+        <div class="news-comment-item">
+          <div class="news-comment-meta">
+            <span class="news-comment-author">Ẩn danh</span>
+            <span>${escHTML(created)}</span>
+          </div>
+          <div class="news-comment-text">${asHTML(c.content || "")}</div>
+        </div>
+      `;
+    }).join("");
+    $panel.find(".news-comments-list").html(html);
+  }
+
+  function renderNewsDetailPost($modal, $card, item){
+    const content = $card.find(".news-item-body").html() || "";
+    const mediaHtml = $card.find(".news-media").prop("outerHTML") || "";
+    const created = $card.find(".news-time").text().trim() || fmtDate(item.created_at);
+    const likeCount = Number($card.find(".news-like-count").first().text() || item.like_count || 0);
+    const commentCount = Number($card.find(".news-comment-count").first().text() || item.comment_count || 0);
+    const likedByMe = $card.attr("data-liked") === "1";
+
+    $modal.find("#newsDetailPost").html(`
+      <article class="news-item" data-post-id="${item.id}">
+        <div class="news-item-head">
+          <div class="news-author-wrap">
+            <div class="news-avatar">DN</div>
+            <div class="news-author-meta">
+              <div class="news-author-name">Nhà trường</div>
+              <div class="news-author-sub">
+                <span>Thông báo chính thức</span>
+                <span class="news-dot"></span>
+                <span class="news-time">${escHTML(created)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="news-stats"><strong class="news-like-stat">${likeCount}</strong> thích · <strong class="news-comment-stat">${commentCount}</strong> bình luận</div>
+        </div>
+        <div class="news-item-body">${content}</div>
+        ${mediaHtml}
+        <div class="news-item-actions">
+          <button type="button" class="btn btn-sm news-action-btn btn-like-post ${likedByMe ? "is-liked" : ""}" data-post-id="${item.id}">
+            <span class="news-action-icon">♥</span><span class="news-like-label">${likedByMe ? "Đã thích" : "Thích"}</span> (<span class="news-like-count">${likeCount}</span>)
+          </button>
+          <button type="button" class="btn btn-sm news-action-btn btn-toggle-comments" data-post-id="${item.id}">
+            <span class="news-action-icon">💬</span>Bình luận (<span class="news-comment-count">${commentCount}</span>)
+          </button>
+        </div>
+      </article>
+    `);
+    $modal.attr("data-post-id", item.id);
+    $modal.find("#newsDetailCommentsCount").text(commentCount);
+    $modal.find("#newsDetailLikeCount").text(likeCount);
+    $modal.find("#newsDetailCommentInput").val("");
+  }
+
+  async function loadNewsCommentsInto($list, postId){
+    $list.html(`<div class="text-muted">Đang tải bình luận...</div>`);
+    const res = await fetch(`${API}/news/${postId}/comments`);
+    const data = await res.json();
+    console.log("API /news/"+postId+"/comments GET response:", data, "status", res.status);
+    if(!res.ok) throw new Error(data.detail || "Không tải được bình luận");
+    if(!Array.isArray(data.items) || !data.items.length){
+      $list.html(`<div class="news-detail-comments-empty">Chưa có bình luận nào. Hãy là người đầu tiên bình luận.</div>`);
+      return Number(data.count || 0);
+    }
+    const html = data.items.map(c => `
+      <div class="news-comment-item">
+        <div class="news-comment-meta">
+          <span class="news-comment-author">Ẩn danh</span>
+          <span>${escHTML(fmtDate(c.created_at))}</span>
+        </div>
+        <div class="news-comment-text">${asHTML(c.content || "")}</div>
+      </div>
+    `).join("");
+    $list.html(html);
+    return Number(data.count || data.items.length || 0);
+  }
+
+  async function loadNewsComments(postId, $card){
+    const $panel = $card.find(".news-comments-panel");
+    if($panel.data("loaded") === 1){
+      $panel.slideToggle(120);
+      return;
+    }
+    $panel.show();
+    $panel.find(".news-comments-list").html(`<div class="text-muted">Đang tải bình luận...</div>`);
+    try{
+      const res = await fetch(`${API}/news/${postId}/comments`);
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "Không tải được bình luận");
+      renderNewsComments($panel, data.items || []);
+      $panel.data("loaded", 1);
+    }catch(e){
+      $panel.find(".news-comments-list").html(`<div class="text-danger">Không tải được bình luận.</div>`);
+    }
+  }
+
+  $("#newsList").on("click", ".btn-like-post", async function(){
+    const postId = $(this).data("post-id");
+    const $card = $(this).closest(".news-item");
+    const fd = new FormData();
+    fd.append("anon_id", getNewsAnonId());
+    try{
+      const res = await fetch(`${API}/news/${postId}/like`, { method:"POST", body: fd });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "Không thể thích bài viết");
+      updateNewsCardStats($card, Number(data.like_count || 0), Number($card.find(".news-comment-count").first().text() || 0), !!data.liked);
+    }catch(e){
+      alert(e.message || "Không thể thích bài viết");
+    }
+  });
+
+  $("#newsList").on("click", ".btn-toggle-comments", async function(){
+    const postId = $(this).data("post-id");
+    const $card = $(this).closest(".news-item");
+    const item = {
+      id: postId,
+      created_at: $card.find(".news-time").text().trim(),
+      like_count: Number($card.find(".news-like-count").first().text() || 0),
+      comment_count: Number($card.find(".news-comment-count").first().text() || 0),
+      media_url: $card.find(".news-media img, .news-media video source").first().attr("src") || "",
+      media_type: $card.find(".news-media video").length ? "video" : ($card.find(".news-media img").length ? "image" : ""),
+      content: $card.find(".news-item-body").text().trim(),
+      liked_by_me: $card.attr("data-liked") === "1",
+    };
+    openNewsDetailModal(item, $card);
+  });
+
+  function openNewsDetailModal(item, $card){
+    const $modal = $("#newsDetailModal");
+    $modal.data("post-id", item.id);
+    renderNewsDetailPost($modal, $card, item);
+    $modal.find("#newsDetailCommentsList").html(`<div class="text-muted">Đang tải bình luận...</div>`);
+    $modal.modal("show");
+    loadNewsCommentsInto($modal.find("#newsDetailCommentsList"), item.id)
+      .then(count => {
+        $modal.find("#newsDetailCommentsCount").text(count);
+        $modal.find("#newsDetailCommentCountInButton").text(count);
+      })
+      .catch(e => {
+        $modal.find("#newsDetailCommentsList").html(`<div class="text-danger">Không tải được bình luận.</div>`);
+      });
+  }
+
+  $(document).on("click", "#newsDetailModal .btn-like-post", async function(){
+    const postId = $(this).data("post-id");
+    const $modal = $("#newsDetailModal");
+    const $card = $modal.find("#newsDetailPost .news-item");
+    const fd = new FormData();
+    fd.append("anon_id", getNewsAnonId());
+    try{
+      const res = await fetch(`${API}/news/${postId}/like`, { method:"POST", body: fd });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.detail || "Không thể thích bài viết");
+      updateNewsCardStats($card, Number(data.like_count || 0), Number($modal.find("#newsDetailCommentsCount").text() || 0), !!data.liked);
+      const $listCard = $(`.news-item[data-post-id="${postId}"]`);
+      updateNewsCardStats($listCard, Number(data.like_count || 0), Number($modal.find("#newsDetailCommentsCount").text() || 0), !!data.liked);
+    }catch(e){
+      alert(e.message || "Không thể thích bài viết");
+    }
+  });
+
+  $(document).on("click", "#newsDetailModal .btn-toggle-comments", async function(){
+    const postId = $(this).data("post-id");
+    const $modal = $("#newsDetailModal");
+    try{
+      const count = await loadNewsCommentsInto($modal.find("#newsDetailCommentsList"), postId);
+      $modal.find("#newsDetailCommentsCount").text(count);
+      $modal.find("#newsDetailCommentCountInButton").text(count);
+    }catch(e){
+      $modal.find("#newsDetailCommentsList").html(`<div class="text-danger">Không tải được bình luận.</div>`);
+    }
+  });
+
+  $(document).on("click", "#newsDetailSubmitComment", async function(){
+    const $modal = $("#newsDetailModal");
+    const postId = $modal.data("post-id");
+    const $input = $modal.find("#newsDetailCommentInput");
+    const content = ($input.val() || "").trim();
+    if(!content){
+      alert("Nhập nội dung bình luận");
+      return;
+    }
+    const fd = new FormData();
+    fd.append("content", content);
+    try{
+      const res = await fetch(`${API}/news/${postId}/comments`, { method:"POST", body: fd });
+      const data = await res.json();
+      console.log("API /news/"+postId+"/comments POST response:", data, "status", res.status);
+      if(!res.ok) throw new Error(data.detail || "Không thể gửi bình luận");
+      $input.val("");
+      const count = await loadNewsCommentsInto($modal.find("#newsDetailCommentsList"), postId);
+      $modal.find("#newsDetailCommentsCount").text(count);
+      $modal.find("#newsDetailCommentCountInButton").text(count);
+      const $listCard = $(`.news-item[data-post-id="${postId}"]`);
+      updateNewsCardStats($listCard, Number($listCard.find(".news-like-count").first().text() || 0), count, $listCard.attr("data-liked") === "1");
+      $modal.find("#newsDetailPost .news-comment-count").text(count);
+      $modal.find("#newsDetailPost .news-comment-stat").text(count);
+    }catch(e){
+      alert(e.message || "Không thể gửi bình luận");
+    }
+  });
+
+  // ===== Chat widget logic =====
+  const $launcher = $("#chatLauncher");
+  const $panel = $("#chatPanel");
+  const $log = $("#chatLog");
+  const $input = $("#chatInput");
+  const $send = $("#chatSend");
+
+  let chatInited = false; // chào lần đầu
+  let pendingNegativeSupportReply = "";
+  let pendingNegativeConversationId = "";
+  let tabSwitchTimer = null;
+
+  function nowHM(){ const d=new Date(); return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; }
+  function scrollBottom(){ $log.stop().animate({scrollTop:$log[0].scrollHeight},180); }
+  function escHTML(s){ return (s||"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m])); }
+  function asHTML(s){ return escHTML(s).replace(/\n/g,"<br>"); }
+
+  // Markdown cơ bản -> HTML (cho bot)
+  function mdAwareHTML(s){
+    let e = escHTML(s || "");
+    e = e.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>"); // **bold**
+    e = e.replace(/^\s*[\*\-]\s+/gm, "• ");                  // bullet
+    return e.replace(/\n/g, "<br>");
+  }
+
+  // ===== General chatbot (center panel) =====
+  const $generalChatLog = $("#generalChatLog");
+  const $generalChatInput = $("#generalChatInput");
+  const $generalChatSend = $("#generalChatSend");
+  const $generalChatClear = $("#generalChatClear");
+  let generalChatInited = false;
+
+  function generalScrollBottom(){
+    if(!$generalChatLog.length) return;
+    $generalChatLog.stop().animate({scrollTop:$generalChatLog[0].scrollHeight},180);
+  }
+
+  function appendGeneralMsg(role, text){
+    const side = role === "me" ? "me" : "bot";
+    const html = role === "bot" ? mdAwareHTML(text) : asHTML(text);
+    $generalChatLog.append(
+      `<div class="general-msg ${side}"><div class="general-bubble">${html}</div></div>
+       <div class="general-msg ${side}"><div class="general-time">${nowHM()}</div></div>`
+    );
+    generalScrollBottom();
+  }
+
+  function showGeneralTyping(){
+    const id = `general-typing-${Date.now()}`;
+    $generalChatLog.append(
+      `<div class="general-msg bot" id="${id}">
+         <div class="general-bubble"><span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>
+       </div>`
+    );
+    generalScrollBottom();
+    return id;
+  }
+
+  function hideGeneralTyping(id){
+    $(`#${id}`).remove();
+  }
+
+  function ensureGeneralConvId(){
+    let id = localStorage.getItem("general_conv_id");
+    if(!id){
+      id = "general-conv-" + Date.now();
+      localStorage.setItem("general_conv_id", id);
+    }
+    return id;
+  }
+
+  function initGeneralChat(){
+    if(generalChatInited) return;
+    appendGeneralMsg("bot", "Chào bạn! Mình là chatbot nội quy và hỗ trợ học tập. Bạn có thể hỏi mình về quy định của trường hoặc các vấn đề học tập.");
+    generalChatInited = true;
+  }
+
+  async function sendGeneralChat(){
+    const u = getUserInfo();
+    if(!u) return requireLogin();
+
+    const message = ($generalChatInput.val() || "").trim();
+    if(!message) return;
+
+    appendGeneralMsg("me", message);
+    $generalChatInput.val("");
+    $generalChatSend.prop("disabled", true);
+    const typingId = showGeneralTyping();
+    try{
+      const res = await fetch(`${API}/api/chat/general`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          message,
+          conversation_id: ensureGeneralConvId(),
+          student_id: String(u.user_id),
+        })
+      });
+      const data = await res.json().catch(()=>({}));
+      hideGeneralTyping(typingId);
+      if(!res.ok){
+        appendGeneralMsg("bot", data.detail || "Mình chưa xử lý được yêu cầu. Bạn thử lại sau nhé.");
+        return;
+      }
+      appendGeneralMsg("bot", data.reply || "(không có nội dung)");
+    }catch(e){
+      hideGeneralTyping(typingId);
+      appendGeneralMsg("bot", "Mình chưa kết nối được máy chủ. Bạn thử lại sau nhé!");
+    }finally{
+      $generalChatSend.prop("disabled", false);
+    }
+  }
+
+  $generalChatSend.on("click", sendGeneralChat);
+  $generalChatInput.on("keydown", e=>{
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      sendGeneralChat();
+    }
+  });
+  $generalChatClear.on("click", ()=>{
+    $generalChatLog.empty();
+    localStorage.removeItem("general_conv_id");
+    generalChatInited = false;
+    initGeneralChat();
+  });
+
+  function appendMsg(role,text){
+    const side = role==="me" ? "me" : "bot";
+    const html = role==="bot" ? mdAwareHTML(text) : asHTML(text);
+    $log.append(
+      `<div class="msg ${side}"><div class="bubble">${html}</div></div>
+       <div class="msg ${side}"><div class="time">${nowHM()}</div></div>`
+    );
+    scrollBottom();
+  }
+  function showTyping(){
+    const id=`typing-${Date.now()}`;
+    $log.append(
+      `<div class="msg bot" id="${id}">
+         <div class="bubble"><span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>
+       </div>`
+    ); scrollBottom(); return id;
+  }
+  function hideTyping(id){ $(`#${id}`).remove(); }
+  function openChat(){
+    $panel.fadeIn(120);
+    $input.trigger("focus");
+    if(pendingNegativeConversationId){
+      localStorage.setItem("conv_id", pendingNegativeConversationId);
+      pendingNegativeConversationId = "";
+    }
+    if (!chatInited) {
+      if(pendingNegativeSupportReply){
+        appendMsg("bot", pendingNegativeSupportReply);
+        pendingNegativeSupportReply = "";
+      }else{
+        appendMsg("bot", "Chào bạn 👋 Mình là trợ lý sinh viên. Mình giúp gì được cho bạn?");
+      }
+      chatInited = true;
+    }
+  }
+  function closeChat(){ $panel.fadeOut(120); }
+  $launcher.on("click", openChat);
+  $("#chatClose").on("click", closeChat);
+
+  // Enter to send (Shift+Enter newline)
+  $input.on("keydown", e=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $("#chatSend").click(); } });
+
+  function ensureConvId(){
+    let id = localStorage.getItem("conv_id");
+    if(!id){ id = "conv-" + Date.now(); localStorage.setItem("conv_id", id); }
+    return id;
+  }
+
+  $("#chatSend").on("click", async ()=>{
+    const u = getUserInfo(); if(!u) return requireLogin();
+    const message = ($input.val()||"").trim(); if(!message) return;
+    appendMsg("me", message); $input.val(""); $send.prop("disabled", true);
+    const tId = showTyping();
+    try{
+      const res = await fetch(`${API}/api/chat`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ message, conversation_id: ensureConvId(), student_id: String(u.user_id) })
+      });
+      const data = await res.json();
+      hideTyping(tId);
+      appendMsg("bot", data.reply || "(không có nội dung)");
+    }catch(e){
+      hideTyping(tId);
+      appendMsg("bot","Mình chưa kết nối được máy chủ. Bạn thử lại sau nhé!");
+    }finally{ $send.prop("disabled", false); }
+  });
+
+  // ===== submit feedback =====
+  $("#feedbackForm").on("submit", async e=>{
+    e.preventDefault();
+    const u = getUserInfo(); if(!u) return requireLogin();
+    const semesterId = $("#semester_id").val();
+    const sid = $("#subject_id").val();
+    const text = $("#text").val().trim();
+    if(!semesterId) return showResult("Vui lòng chọn kỳ học.","warning");
+    if(!sid)  return showResult("Vui lòng chọn học phần.","warning");
+    if(!text) return showResult("Vui lòng nhập nội dung đánh giá.","warning");
+
+    $("#btnSubmit").prop("disabled", true); $("#loading").show(); showResult("Đang gửi đánh giá…","secondary");
+    $("#savingFeedbackModal").modal("show");
+
+    try{
+      const fd = new FormData(); fd.append("user_id", u.user_id); fd.append("subject_id", sid); fd.append("text", text);
+      const res = await fetch(`${API}/feedback`, { method:"POST", body: fd });
+      const data = await res.json().catch(()=>({}));
+      console.log("API /feedback response:", data, "status", res.status);
+      if(!res.ok){
+        const msg = data.detail || "Lỗi khi gửi đánh giá.";
+        showResult(msg,"danger");
+        return;
+      }
+      showResult("Cảm ơn bạn! Đánh giá đã được ghi nhận.","success"); $("#text").val("");
+      $("#btnSubmit").prop("disabled", false);
+      $("#loading").hide();
+      $("#savingFeedbackModal").modal("hide");
+
+      const isNeg = String(data.label||"").toUpperCase()==="NEG";
+      const negHigh = (data.prob_neg??0) >= NEG_GATE;
+      if(data.negative_support_reply){
+        pendingNegativeSupportReply = String(data.negative_support_reply || "");
+      }
+      if(data.negative_support_conversation_id){
+        pendingNegativeConversationId = String(data.negative_support_conversation_id || "");
+      }
+      if(isNeg || negHigh){ $("#negModal").modal("show"); }
+
+      if($('#tab-feedback').hasClass('active')) await loadHistory(u.user_id);
+      renderSubjectsBySemester($("#semester_id").val());
+    }catch(e){ console.error(e); showResult("Không kết nối được server.","danger"); }
+    finally{
+      $("#btnSubmit").prop("disabled", false);
+      $("#loading").hide();
+      $("#savingFeedbackModal").modal("hide");
+    }
+  });
+
+  // Popup OK → hiển thị launcher & mở chat
+  $("#btnNegOk").on("click", ()=>{
+    $("#negModal").modal("hide");
+    $("#chatLauncher").fadeIn(120);
+    openChat();
+  });
+
+  function activateTopTab(target){
+    const $links = $('#tabs .nav-link');
+    const $targetLink = $links.filter(`[href="${target}"]`).first();
+    const $targetPane = $(target);
+    if(!$targetLink.length || !$targetPane.length) return;
+
+    const currentTarget = $links.filter('.active').attr('href');
+    if(currentTarget === target){
+      // Vẫn cần áp chế độ scroll đúng cho tab hiện tại khi tải trang hoặc bấm lại tab active
+      setTabScrollMode(target);
+      return;
+    }
+
+    $links.removeClass('active').attr('aria-selected', 'false');
+    $targetLink.addClass('active').attr('aria-selected', 'true');
+
+    const $panes = $('.tab-content .tab-pane');
+    const $tabContent = $('.tab-content').first();
+    const $currentPane = $panes.filter('.show.active').not($targetPane);
+
+    if(tabSwitchTimer){
+      clearTimeout(tabSwitchTimer);
+      tabSwitchTimer = null;
+    }
+
+    const showTargetPane = () => {
+      $panes.removeClass('show active is-entering is-exiting');
+      $targetPane.addClass('active is-entering');
+      requestAnimationFrame(()=>{
+        $targetPane.addClass('show');
+        $targetPane.removeClass('is-entering');
+        window.setTimeout(()=>{
+          $tabContent.removeClass('is-switching');
+        }, 360);
+      });
+    };
+
+    if($currentPane.length){
+      $tabContent.addClass('is-switching');
+      $currentPane.removeClass('is-entering').addClass('is-exiting');
+      tabSwitchTimer = window.setTimeout(() => {
+        showTargetPane();
+        tabSwitchTimer = null;
+      }, 300);
+    }else{
+      showTargetPane();
+    }
+
+    setTabScrollMode(target);
+
+    if(target === '#tab-chatbot'){
+      initGeneralChat();
+      setTimeout(()=> $generalChatInput.trigger('focus'), 100);
+      return;
+    }
+    if(target === '#tab-feedback'){
+      const u = getUserInfo();
+      if(u) loadHistory(u.user_id);
+      return;
+    }
+    if(target === '#tab-news'){
+      loadNews();
+      return;
+    }
+    if(target === '#tab-survey'){
+      loadSurveys();
+    }
+  }
+
+  // Chuyển tab bằng controller riêng để tránh xung đột event của Bootstrap/AdminLTE
+  $('#tabs .nav-link').on('click', function(e){
+    e.preventDefault();
+    const target = $(this).attr('href');
+    activateTopTab(target);
+  });
+
+  function setTabScrollMode(target){
+    $("body").removeClass("chatbot-no-scroll news-no-scroll feedback-no-scroll");
+    if(target === "#tab-chatbot"){
+      $("body").addClass("chatbot-no-scroll");
+      return;
+    }
+    if(target === "#tab-news"){
+      $("body").addClass("news-no-scroll");
+      return;
+    }
+    if(target === "#tab-feedback"){
+      $("body").addClass("feedback-no-scroll");
+    }
+  }
+
+  // ===== Cập nhật thông tin user mới nhất =====
+  async function refreshUserInfo(userId) {
+    try {
+      const res = await fetch(`${API}/user/me/${userId}`);
+      if(res.ok) {
+        const userData = await res.json();
+        // Cập nhật localStorage với thông tin mới
+        const currentUser = getUserInfo();
+        if(currentUser) {
+          const updatedUser = { ...currentUser, ...userData };
+          localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+          return updatedUser;
+        }
+      }
+    } catch(e) {
+      console.error("Failed to refresh user info:", e);
+    }
+    return null;
+  }
+
+  // ===== boot =====
+  (async ()=>{
+    const u = requireLogin(); if(!u) return;
+    
+    // Cập nhật thông tin user mới nhất từ server
+    const refreshedUser = await refreshUserInfo(u.user_id);
+    const currentUser = refreshedUser || u;
+    
+    renderStudentInfo(currentUser);
+    await loadSemesters();
+    await loadSubjectsForClass(currentUser.class_id);
+
+    $("#semester_id").on("change", function(){
+      renderSubjectsBySemester($(this).val());
+    });
+    
+    $('#btnHistoryPopup').on('click', openFeedbackHistoryModal);
+    $('#btnReloadHistoryModal').on('click', async ()=>{
+      await refreshFeedbackHistoryModal();
+    });
+    $("#feedbackHistoryTable").on("click", ".btn-edit-feedback", function(){
+      const feedbackId = $(this).data("feedback-id");
+      const item = getFeedbackHistoryItem(feedbackId);
+      openFeedbackEditModal(item);
+    });
+    $("#feedbackHistoryTable").on("click", ".btn-delete-feedback", function(){
+      const feedbackId = $(this).data("feedback-id");
+      deleteFeedbackEntry(feedbackId);
+    });
+    $("#btnSaveFeedbackEdit").on("click", saveFeedbackEdit);
+    $("#feedbackEditForm").on("submit", async e=>{
+      e.preventDefault();
+      await saveFeedbackEdit();
+    });
+
+    await loadNews();
+    await loadSurveys();
+
+    // Đồng bộ chế độ scroll theo tab đang active lúc tải trang
+    const activeTabHref = $('#tabs .nav-link.active').attr('href') || '#tab-news';
+    activateTopTab(activeTabHref);
+  })();
+  $("#btnLogout").on("click", function (e) {
+  e.preventDefault();
+  try { localStorage.removeItem("userInfo"); } catch {}
+  // Nếu bạn lưu thêm conv_id hay chat_enabled muốn xoá luôn:
+  // localStorage.removeItem("conv_id");
+  // localStorage.removeItem("general_conv_id");
+  window.location.href = "/frontend/login.html";
+});
+
+</script>
+</body>
+</html>
