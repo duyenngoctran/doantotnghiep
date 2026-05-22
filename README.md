@@ -108,19 +108,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ## 8. Ghi chú vận hành
 
 - Không commit `.env` hay API keys.
-- Nếu bạn muốn dùng GitHub Actions / CI để deploy, mình có thể tạo workflow mẫu.
-
-## 9. Tiếp theo?
-
-- Mình đã chỉnh `README.md` để sát với `Student_feedback_system` trong repo. Muốn mình commit và push thay đổi này lên `origin/main` bây giờ không? (Bạn sẽ cần xác thực nếu Git yêu cầu PAT).
-
----
-
-File này được viết lại trực tiếp theo mã nguồn của bạn, không sao chép từ nguồn khác.
-- `app/` — backend (API, models, CRUD, chatbots, sentiment)
-- `frontend/` — trang tĩnh (login, student feedback, admin)
-- `phobert_student_feedback_sentiment/` — tokenizer + model local dùng để phân tích sentiment
-- `uploads/` — nơi lưu file tải lên (đã thêm `.gitkeep`)
+- Nếu bạn muốn dùng GitHub Actions / CI để deploy, mình có thể tạo workflow mẫu
 
 ## Công nghệ chính
 - Python 3.10+
